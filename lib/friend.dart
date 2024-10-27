@@ -10,6 +10,8 @@ class friendPage extends StatefulWidget {
 class _friendPageState extends State<friendPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Text("friend"),
+    );
   }
 }

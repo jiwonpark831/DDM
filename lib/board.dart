@@ -27,23 +27,22 @@ class _boardPageState extends State<boardPage> {
             SizedBox(height: 16),
             Row(
               children: [
-                MeetingCard(
+                myGroupCard(
                   title: '치즈볼 맛집 찾기',
                   date: '매주 수요일',
                   time: '12:00 - 14:00',
                   location: '익선동황금 빵',
-                  imageUrl: 'a',
+                  imageUrl: 'https://namu.wiki/w/치즈볼',
                 ),
                 SizedBox(width: 8),
-                MeetingCard(
+                myGroupCard(
                   title: '중고교사 성적 내기',
                   date: '매주 화, 금',
                   time: '18:00 - 22:00',
                   location: '노원 410(A)',
-                  imageUrl: 'a',
+                  imageUrl: 'https://namu.wiki/w/치즈볼',
                 ),
                 SizedBox(width: 8),
-                AddMeetingCard(),
               ],
             ),
             SizedBox(height: 32),
@@ -73,14 +72,14 @@ class _boardPageState extends State<boardPage> {
   }
 }
 
-class MeetingCard extends StatelessWidget {
+class myGroupCard extends StatelessWidget {
   final String title;
   final String date;
   final String time;
   final String location;
   final String imageUrl;
 
-  MeetingCard({
+  myGroupCard({
     required this.title,
     required this.date,
     required this.time,
@@ -110,34 +109,6 @@ class MeetingCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class AddMeetingCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        child: Center(
-          child: Icon(Icons.add, size: 40, color: Colors.grey),
-        ),
-      ),
-    );
-  }
-}
-
-class MeetingBoardCard extends StatelessWidget {
-  final String title;
-
-  MeetingBoardCard({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {},
     );
   }
 }

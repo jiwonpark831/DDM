@@ -32,11 +32,14 @@ class _homePageState extends State<homePage> {
     return Scaffold(
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Color(0xff64DCAC),
+        unselectedItemColor: Color(0xff1C1B1F),
+        selectedLabelStyle: TextStyle(color: Color(0xff64DCAC)),
+        unselectedLabelStyle: TextStyle(color: Color(0xff1C1B1F)),
         items: [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.list_alt,
-              color: Color(0xff64DCAC),
             ),
             label: '게시판',
           ),
@@ -57,6 +60,8 @@ class _homePageState extends State<homePage> {
             label: '채팅',
           ),
         ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -72,6 +77,8 @@ class mainPage extends StatefulWidget {
 class _mainPageState extends State<mainPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Text("home"),
+    );
   }
 }

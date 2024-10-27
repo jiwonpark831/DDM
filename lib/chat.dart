@@ -10,6 +10,8 @@ class chatPage extends StatefulWidget {
 class _chatPageState extends State<chatPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Text("chat"),
+    );
   }
 }
