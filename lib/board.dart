@@ -32,7 +32,7 @@ class _boardPageState extends State<boardPage> {
                   date: '매주 수요일',
                   time: '12:00 - 14:00',
                   location: '익선동황금 빵',
-                  imageUrl: 'https://example.com/cheeseball.jpg',
+                  imageUrl: 'a',
                 ),
                 SizedBox(width: 8),
                 MeetingCard(
@@ -40,7 +40,7 @@ class _boardPageState extends State<boardPage> {
                   date: '매주 화, 금',
                   time: '18:00 - 22:00',
                   location: '노원 410(A)',
-                  imageUrl: 'https://example.com/teachers.jpg',
+                  imageUrl: 'a',
                 ),
                 SizedBox(width: 8),
                 AddMeetingCard(),
