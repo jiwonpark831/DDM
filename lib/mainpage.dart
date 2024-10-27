@@ -9,17 +9,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: mainPage(),
     );
   }
 }
 
-class MainPage extends StatefulWidget {
+class mainPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  _mainPageState createState() => _mainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _mainPageState extends State<mainPage> {
   String selectedStatus = '밥 먹어요'; // Default dropdown value
   final List<String> statusOptions = [
     '카공해요',

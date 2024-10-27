@@ -69,7 +69,7 @@ class _StartPageState extends State<StartPage> {
                       ElevatedButton.icon(
                         onPressed: () {
                           // Google login action
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => homePage()),
                           );
@@ -86,7 +86,7 @@ class _StartPageState extends State<StartPage> {
                       ElevatedButton.icon(
                         onPressed: () {
                           // Apple login action
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => homePage()),
                           );
@@ -102,7 +102,7 @@ class _StartPageState extends State<StartPage> {
                       ElevatedButton.icon(
                         onPressed: () {
                           // Email login action
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => homePage()),
                           );
