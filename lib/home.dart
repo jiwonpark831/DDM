@@ -5,6 +5,9 @@ import 'chat.dart';
 import 'friend.dart';
 import 'map.dart';
 
+import 'setting.dart';
+import 'notification.dart';
+
 class homePage extends StatefulWidget {
   const homePage({super.key});
 
@@ -13,7 +16,7 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -96,9 +99,23 @@ class _mainPageState extends State<mainPage> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: Icon(Icons.notifications , color: Colors.black),
+            onPressed: () {
+              // Settings button action
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationPage()),
+              );
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.settings, color: Colors.black),
             onPressed: () {
               // Settings button action
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
             },
           ),
         ],
@@ -204,15 +221,6 @@ class _mainPageState extends State<mainPage> {
           ],
         ),
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: [
-      //     BottomNavigationBarItem(icon: Icon(Icons.article), label: '게시판'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.people), label: '친구'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.location_on), label: '위치'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.chat), label: '채팅'),
-      //   ],
-      // ),
     );
   }
 

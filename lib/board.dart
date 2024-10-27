@@ -93,7 +93,7 @@ class myGroupCard extends StatelessWidget {
       child: Card(
         child: Column(
           children: [
-            Image.network(imageUrl, height: 100, fit: BoxFit.cover),
+            // Image.network(imageUrl, height: 100, fit: BoxFit.cover),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
