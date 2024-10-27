@@ -36,6 +36,7 @@ class _homePageState extends State<homePage> {
         unselectedItemColor: Color(0xff1C1B1F),
         selectedLabelStyle: TextStyle(color: Color(0xff64DCAC)),
         unselectedLabelStyle: TextStyle(color: Color(0xff1C1B1F)),
+        type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
             icon: Icon(
