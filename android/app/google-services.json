@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "452384991723",
+    "project_id": "ddm-project-32430",
+    "storage_bucket": "ddm-project-32430.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452384991723:android:16949e0b9d0c71541911ae",
+        "android_client_info": {
+          "package_name": "com.ddm.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd9M0myNLs4cf0fym6YpyeFjECLkQCSpI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
