@@ -95,9 +95,9 @@ class _mainPageState extends State<mainPage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: Text(
-            'ddm?',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
+          title: Image.asset(
+            'assets/ddm_image.png', // Replace with your actual asset path
+            width: 100,
           ),
           centerTitle: true,
           actions: [
@@ -139,53 +139,168 @@ class _mainPageState extends State<mainPage> {
               ),
               SizedBox(height: 20),
               SizedBox(height: 10),
-              Text(
-                '나',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                appState.currentuser!.status,
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 20),
+
+
+              // Row(children: [
+              //   Icon(Icons.people),
+              //   Column(children: [
+              //     Text(
+              //       appState.currentuser.name,
+              //       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              //     ),
+              //     SizedBox(height: 10),
+              //     Text(
+              //       appState.currentuser!.status,
+              //       style: TextStyle(fontSize: 16),
+              //     ),
+              //   ],)
+              // ],),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('공강', style: TextStyle(fontSize: 16)),
-                  Switch(
-                    value: appState.currentuser!.gonggang,
-                    onChanged: (value) {
-                      appState.gonggangOnOff(value);
-                    },
-                    activeColor: Colors.greenAccent,
-                  ),
-                  SizedBox(width: 10),
-                  DropdownButton<String>(
-                    value: selectedStatus,
-                    icon: Icon(Icons.arrow_drop_down),
-                    onChanged: (String? newValue) {
-                      appState.changeTag(newValue as String);
-                    },
-                    items: statusOptions
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Row(
-                          children: [
-                            Text(value),
-                            SizedBox(width: 8),
-                            Icon(
-                              _getStatusIcon(value),
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                  // 프로필 이미지
+                  Column(children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 70,
+                      child: Image.network(
+                        'https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86',
+                        width: 200,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    // 이름
+                    Text(
+                      appState.currentuser.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                  ],),
+                  SizedBox(width: 20), // 이미지와 텍스트 간 간격
+                  // 이름과 상태 메시지를 세로로 정렬
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 상태 메시지
+                    
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50], // 말풍선 배경색
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.green.shade200),
+                      ),
+                      child: 
+                      Row(
+                        children:[
+                          Text(
+                            appState.currentuser.status,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          TextButton(
+                            child: Text('편집'),
+                            onPressed:(() {
+                              TextEditingController _controller = TextEditingController(text: appState.currentuser.status);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Edit Status Message"),
+                                    content: TextField(
+                                      controller: _controller,
+                                      decoration: InputDecoration(
+                                        hintText: "Enter your status message",
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            appState.changeStatus(_controller.text); // 상태 메시지 업데이트
+                                          });
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text("Save"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            })
+                          )
+                      ])
+                    ),
+                      
+                      
+
+                      SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('공강', style: TextStyle(fontSize: 16)),
+                          Switch(
+                            value: appState.currentuser!.gonggang,
+                            onChanged: (value) {
+                              appState.gonggangOnOff(value);
+                              setState((){});
+                            },
+                            activeColor: Colors.greenAccent,
+                          ),
+                          SizedBox(width: 10),
+                          DropdownButton<String>(
+                            value: selectedStatus,
+                            icon: Icon(Icons.arrow_drop_down),
+                            onChanged: (String? newValue) {
+                              appState.changeTag(newValue as String);
+                              setState((){});
+                            },
+                            items: statusOptions
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Row(
+                                  children: [
+                                    Text(value),
+                                    SizedBox(width: 8),
+                                    Icon(
+                                      _getStatusIcon(value),
+                                      size: 16,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
+
+
+              // Text(
+              //   appState.currentuser.name,
+              //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              // ),
+              // SizedBox(height: 10),
+              // Text(
+              //   appState.currentuser!.status,
+              //   style: TextStyle(fontSize: 16),
+              // ),
+
+              SizedBox(height: 20),
               SizedBox(height: 20),
               Text(
                 '현재 친구의 공강 상태를 확인하세요!',

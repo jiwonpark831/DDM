@@ -1,147 +1,89 @@
-// import 'package:flutter/material.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:provider/provider.dart';
-
-// import 'firebase_options.dart';
-
-// import 'app_state.dart';
-// import 'login.dart';
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(
-//     options: DefaultFirebaseOptions.currentPlatform,
-//   );
-//   runApp(ChangeNotifierProvider(
-//     create: (context) => ApplicationState(),
-//     builder: ((context, child) => MyApp()),
-//   ));
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//         title: 'Moappfinal_seodangol',
-//         initialRoute: '/main',
-//         routes: {
-//           '/login': (BuildContext context) => LoginPage(),
-//         });
-//   }
-// }
-
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
-  runApp(MyApp());
-}
+import 'home.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SignUpScreen(),
-    );
+class LoginPage extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _loginUser(BuildContext context) async {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    try {
+      // Firebase Auth를 사용하여 이메일로 로그인
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // 로그인 성공 시 홈 페이지로 이동 (예: Navigator.pushReplacement)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("로그인에 성공했습니다.")),
+      );
+
+      // 예: 로그인 후 이동할 페이지로의 네비게이션
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => homePage()),
+      );
+
+    } on FirebaseAuthException catch (e) {
+      // 로그인 오류 처리
+      String message = "로그인에 실패했습니다.";
+      if (e.code == 'user-not-found') {
+        message = "사용자가 존재하지 않습니다.";
+      } else if (e.code == 'wrong-password') {
+        message = "비밀번호가 올바르지 않습니다.";
+      } else if (e.code == 'invalid-email') {
+        message = "유효하지 않은 이메일 형식입니다.";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
   }
-}
-
-class SignUpScreen extends StatefulWidget {
-  @override
-  _SignUpScreenState createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.black,
-          onPressed: () {
-            // Action for back button
-          },
-        ),
+        title: Text("로그인하기"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Text(
-                '이메일로 시작하기',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                labelText: "이메일(email@example.com)",
+                prefixIcon: Icon(Icons.email),
               ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: '이름',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(),
-                ),
+            ),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: "비밀번호",
+                prefixIcon: Icon(Icons.lock),
               ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: '이메일(email@example.com)',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _loginUser(context);
+              },
+              child: Text("로그인하기"),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.green[200],
+                minimumSize: Size(double.infinity, 50), // 버튼이 가로로 꽉 차도록 설정
               ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: '비밀번호',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: '비밀번호 확인',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Handle form submission
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.greenAccent,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(
-                    '계정 만들기',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

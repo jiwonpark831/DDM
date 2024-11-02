@@ -35,7 +35,17 @@ class ApplicationState extends ChangeNotifier {
   final Location location = new Location();
   LocationData? _locationData;
 
-  CurrentUser? currentuser;
+  CurrentUser currentuser=
+          CurrentUser(
+            name: "Unknown",
+            email:"Unknown",
+            age: 0,
+            gender: "Unknown",
+            status: "Unknown",
+            uid: "Unknown",
+            tag_index: "카공해요",
+            gonggang: true,
+          );
   // List<Product> _productList = [];
   // List<Product> get productList => _productList;
 
@@ -80,60 +90,58 @@ class ApplicationState extends ChangeNotifier {
 
   Future<void> init() async {
 
-    print('init() Start');
-    FirebaseFirestore.instance
-        .collection('user')
-        .snapshots()
-        .listen((snapshot) {
-      // _attendees = snapshot.docs.length;
-      notifyListeners();
-    });
-    print('notify listener Start');
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    print(uid);
+    // print('init() Start');
+    // FirebaseFirestore.instance
+    //     .collection('user')
+    //     .snapshots()
+    //     .listen((snapshot) {
+    //   // _attendees = snapshot.docs.length;
+    //   notifyListeners();
+    // });
+    // print('notify listener Start');
+    // final uid = FirebaseAuth.instance.currentUser!.uid;
+    // print(uid);
     
-    DocumentSnapshot? userDoc = await FirebaseFirestore.instance
-      .collection('user')
-      .doc(uid)
-      .get();
-    print(userDoc.exists);
+    // DocumentSnapshot? userDoc = await FirebaseFirestore.instance
+    //   .collection('user')
+    //   .doc(uid)
+    //   .get();
+    // print(userDoc.exists);
 
-    notifyListeners();
-    print(userDoc);
+    // notifyListeners();
+    // print(userDoc);
 
-    print('userDoc finish');
-    final data = userDoc.data() as Map<String, dynamic>;
-    print('data finish');
-    notifyListeners();
-    currentuser=CurrentUser(
-      name: data['name'] as String,
-      email: data['email'] as String,
-      age: data['age'] as num,
-      gender: data['gender'] as String,
-      status: data['status'] as String,
-      uid: data['uid'] as String,
-      tag_index: data['tag_index'] as String,
-      gonggang: data['gonggang'] as bool
-    );
-    print('initialize Finished!');
-    print(currentuser);
+    // print('userDoc finish');
+    // final data = userDoc.data() as Map<String, dynamic>;
+    // print('data finish');
+    // notifyListeners();
+    // currentuser=CurrentUser(
+    //   name: data['name'] as String,
+    //   email: data['email'] as String,
+    //   age: data['age'] as num,
+    //   gender: data['gender'] as String,
+    //   status: data['status'] as String,
+    //   uid: data['uid'] as String,
+    //   tag_index: data['tag_index'] as String,
+    //   gonggang: data['gonggang'] as bool
+    // );
+    // print('initialize Finished!');
 
-    _userSubscription = await FirebaseFirestore.instance
+    _userSubscription = FirebaseFirestore.instance
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .snapshots()
       .listen((snapshot) {
         currentuser=
           CurrentUser(
-            
-            name: snapshot.data()?['name'] as String,
-            email: snapshot.data()?['email'] as String,
-            age: snapshot.data()?['age'] as num,
-            gender: snapshot.data()?['gender'] as String,
-            status: snapshot.data()?['status'] as String,
-            uid: snapshot.data()?['uid'] as String,
-            tag_index: snapshot.data()?['tag_index'] as String,
-            gonggang: snapshot.data()?['gonggang'] as bool,
+            name: snapshot.data()?['name'] as String? ?? "Unknown",
+            email: snapshot.data()?['email'] as String? ?? "Unknown",
+            age: snapshot.data()?['age'] as num? ?? 0,
+            gender: snapshot.data()?['gender'] as String? ?? "Unknown",
+            status: snapshot.data()?['status'] as String? ?? "Unknown",
+            uid: snapshot.data()?['uid'] as String? ?? "Unknown",
+            tag_index: snapshot.data()?['tag_index'] as String? ?? "카공해요",
+            gonggang: snapshot.data()?['gonggang'] as bool? ?? true,
           );
       // }
       notifyListeners();
@@ -218,6 +226,11 @@ class ApplicationState extends ChangeNotifier {
   Future<void> changeTag(String value) async {
     await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
       'tag_index': value, // 기본값
+    });
+  }
+  Future<void> changeStatus(String value) async {
+    await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
+      'status': value, // 기본값
     });
   }
 

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       title: 'ddm',
       home: StartPage(),
     );

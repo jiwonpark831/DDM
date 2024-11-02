@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'home.dart';
+import 'signup.dart';
+import 'login.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -16,7 +18,6 @@ Future signInWithGoogle_original() async {
   // Obtain the auth details from the request
   final GoogleSignInAuthentication googleAuth =
       await googleUser.authentication;
-  print(googleUser);
 
   // Create a new credential
   final AuthCredential credential = GoogleAuthProvider.credential(
@@ -36,13 +37,13 @@ Future signInWithGoogle_original() async {
         await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
           'uid': user.uid,
           'name': user.displayName ?? 'Unknown',
-          'email': user.email,
+          'email': user.email ?? 'Unknown',
           'age': 0, // 기본값
           'gender': 'unknown', // 기본값
           'joinedMeetings': [], // 기본값
           'joinedChats': [], // 기본값
           'gonggang': true, // 기본값
-          'tag_index': 0,
+          'tag_index': "카공해요",
           'status': "같이 밥 먹을 사람~",
           'createdAt': FieldValue.serverTimestamp(), // 생성 시간 기록
         });
@@ -167,9 +168,9 @@ class _StartPageState extends State<StartPage> {
                       ElevatedButton.icon(
                         onPressed: () {
                           // Email login action
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => homePage()),
+                            MaterialPageRoute(builder: (context) => LoginPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -183,9 +184,13 @@ class _StartPageState extends State<StartPage> {
                       TextButton(
                         onPressed: () {
                           // Existing account action
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignupPage()),
+                          );
                         },
                         child: Text(
-                          '이메일로 만든 계정이 있나요?',
+                          '이메일로 만든 계정이 없으신가요?',
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
