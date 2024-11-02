@@ -12,21 +12,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-void main() {
-  initializeDateFormatting().then((_) => runApp(const MyApp()));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) => const MaterialApp(
-        home: Directionality(
-          textDirection: TextDirection.ltr,
-          child: ChatPage(),
-        ),
-      );
-}
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});

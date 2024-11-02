@@ -2,19 +2,82 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 
-// void main() {
-//   runApp(MyApp());
-// }
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: StartPage(),
-//     );
-//   }
-// }
+Future signInWithGoogle_original() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  if( googleUser == null){
+    return null;
+  }
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+  print(googleUser);
+
+  // Create a new credential
+  final AuthCredential credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+  // Step 4. Firebase 로그인 실행
+  final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  final User? user = userCredential.user;
+
+  if (user != null) {
+      // Step 5. Firestore에 사용자 기본 정보가 있는지 확인
+      final userDoc = await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        // Step 6. 새 사용자일 경우 Firestore에 기본값 저장
+        await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
+          'uid': user.uid,
+          'name': user.displayName ?? 'Unknown',
+          'email': user.email,
+          'age': 0, // 기본값
+          'gender': 'unknown', // 기본값
+          'joinedMeetings': [], // 기본값
+          'joinedChats': [], // 기본값
+          'gonggang': true, // 기본값
+          'tag_index': 0,
+          'status': "같이 밥 먹을 사람~",
+          'createdAt': FieldValue.serverTimestamp(), // 생성 시간 기록
+        });
+        print("새 사용자 정보가 Firestore에 저장되었습니다.");
+      } else {
+        print("기존 사용자입니다.");
+      }
+
+      return user;
+  }
+
+  return null;
+}
+
+Future<void> signInWithGoogle(BuildContext context) async {
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) return; // 사용자가 로그인 취소 시
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => homePage()),
+    );
+  } catch (e) {
+    print('Google Sign-In Error: $e');
+  }
+}
 
 class StartPage extends StatefulWidget {
   @override
@@ -67,8 +130,10 @@ class _StartPageState extends State<StartPage> {
                   child: Column(
                     children: [
                       ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
                           // Google login action
+                          await signInWithGoogle_original();
+                          print("Done");
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => homePage()),

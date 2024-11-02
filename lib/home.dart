@@ -7,6 +7,8 @@ import 'map.dart';
 
 import 'setting.dart';
 import 'notification.dart';
+import 'package:provider/provider.dart';
+import 'app_state.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -77,7 +79,6 @@ class mainPage extends StatefulWidget {
 }
 
 class _mainPageState extends State<mainPage> {
-  String selectedStatus = '밥 먹어요'; // Default dropdown value
   final List<String> statusOptions = [
     '카공해요',
     '밥 먹어요',
@@ -87,140 +88,144 @@ class _mainPageState extends State<mainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return Consumer<ApplicationState>(builder: (context, appState, _) {
+      String selectedStatus = appState.currentuser!.tag_index; // Default dropdown value
+      return Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          'ddm?',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications , color: Colors.black),
-            onPressed: () {
-              // Settings button action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationPage()),
-              );
-            },
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: Text(
+            'ddm?',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
           ),
-          IconButton(
-            icon: Icon(Icons.settings, color: Colors.black),
-            onPressed: () {
-              // Settings button action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-          ),
-        ],
-        leading: SizedBox(), // Placeholder to center the title
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text('종강', style: TextStyle(fontSize: 18)),
-                Text('D-65', style: TextStyle(fontSize: 18, color: Colors.red)),
-                Text('2학기', style: TextStyle(fontSize: 18)),
-                Text('D+16', style: TextStyle(fontSize: 18, color: Colors.blue)),
-              ],
-            ),
-            SizedBox(height: 20),
-            SizedBox(height: 10),
-            Text(
-              '나',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              '“같이 밥 먹어요~”',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('공강', style: TextStyle(fontSize: 16)),
-                Switch(
-                  value: true,
-                  onChanged: (value) {},
-                  activeColor: Colors.greenAccent,
-                ),
-                SizedBox(width: 10),
-                DropdownButton<String>(
-                  value: selectedStatus,
-                  icon: Icon(Icons.arrow_drop_down),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedStatus = newValue!;
-                    });
-                  },
-                  items: statusOptions
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Row(
-                        children: [
-                          Text(value),
-                          SizedBox(width: 8),
-                          Icon(
-                            _getStatusIcon(value),
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              '현재 친구의 공강 상태를 확인하세요!',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                CircleAvatar(radius: 30),
-                CircleAvatar(radius: 30),
-                CircleAvatar(radius: 30),
-                CircleAvatar(radius: 30),
-                CircleAvatar(radius: 30),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              '내 친구들이 모인 게시판을 확인하세요!',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(4, (index) {
-                return Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.greenAccent),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.notifications , color: Colors.black),
+              onPressed: () {
+                // Settings button action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationPage()),
                 );
-              }),
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings, color: Colors.black),
+              onPressed: () {
+                // Settings button action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
             ),
           ],
+          leading: SizedBox(), // Placeholder to center the title
         ),
-      ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('종강', style: TextStyle(fontSize: 18)),
+                  Text('D-65', style: TextStyle(fontSize: 18, color: Colors.red)),
+                  Text('2학기', style: TextStyle(fontSize: 18)),
+                  Text('D+16', style: TextStyle(fontSize: 18, color: Colors.blue)),
+                ],
+              ),
+              SizedBox(height: 20),
+              SizedBox(height: 10),
+              Text(
+                '나',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                appState.currentuser!.status,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('공강', style: TextStyle(fontSize: 16)),
+                  Switch(
+                    value: appState.currentuser!.gonggang,
+                    onChanged: (value) {
+                      appState.gonggangOnOff(value);
+                    },
+                    activeColor: Colors.greenAccent,
+                  ),
+                  SizedBox(width: 10),
+                  DropdownButton<String>(
+                    value: selectedStatus,
+                    icon: Icon(Icons.arrow_drop_down),
+                    onChanged: (String? newValue) {
+                      appState.changeTag(newValue as String);
+                    },
+                    items: statusOptions
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Row(
+                          children: [
+                            Text(value),
+                            SizedBox(width: 8),
+                            Icon(
+                              _getStatusIcon(value),
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                '현재 친구의 공강 상태를 확인하세요!',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CircleAvatar(radius: 30),
+                  CircleAvatar(radius: 30),
+                  CircleAvatar(radius: 30),
+                  CircleAvatar(radius: 30),
+                  CircleAvatar(radius: 30),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                '내 친구들이 모인 게시판을 확인하세요!',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(4, (index) {
+                  return Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.greenAccent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
+        ),
+      );
+      }
     );
   }
 
