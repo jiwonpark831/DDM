@@ -165,7 +165,7 @@ class _mainPageState extends State<mainPage> {
                     CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 70,
-                      child: Image.network( // default image
+                      child: Image.network( // default image sdf
                         'https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86',
                         width: 200,
                       ),
