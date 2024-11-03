@@ -40,6 +40,7 @@ Future signInWithGoogle_original() async {
           'email': user.email ?? 'Unknown',
           'age': 0, // 기본값
           'gender': 'unknown', // 기본값
+          'friendList': {},
           'joinedMeetings': [], // 기본값
           'joinedChats': [], // 기본값
           'gonggang': true, // 기본값

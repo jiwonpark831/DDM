@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -18,6 +19,38 @@ class LoginPage extends StatelessWidget {
         email: email,
         password: password,
       );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        // Step 5. Firestore에 사용자 기본 정보가 있는지 확인
+        final userDoc = await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
+
+        if (!userDoc.exists) {
+          // Step 6. 새 사용자일 경우 Firestore에 기본값 저장
+          await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
+            'uid': user.uid,
+            'name': user.displayName ?? 'Unknown',
+            'email': user.email ?? 'Unknown',
+            'age': 0, // 기본값
+            'gender': 'unknown', // 기본값
+            'friendList': {},
+            'joinedMeetings': [], // 기본값
+            'joinedChats': [], // 기본값
+            'gonggang': true, // 기본값
+            'tag_index': "카공해요",
+            'status': "같이 밥 먹을 사람~",
+            'createdAt': FieldValue.serverTimestamp(), // 생성 시간 기록
+          });
+          print("새 사용자 정보가 Firestore에 저장되었습니다.");
+        } else {
+          print("기존 사용자입니다.");
+        }
+      }
+
+
+
+      
 
       // 로그인 성공 시 홈 페이지로 이동 (예: Navigator.pushReplacement)
       ScaffoldMessenger.of(context).showSnackBar(

@@ -40,6 +40,7 @@ class ApplicationState extends ChangeNotifier {
             name: "Unknown",
             email:"Unknown",
             age: 0,
+            friendList: {},
             gender: "Unknown",
             status: "Unknown",
             uid: "Unknown",
@@ -137,6 +138,7 @@ class ApplicationState extends ChangeNotifier {
             name: snapshot.data()?['name'] as String? ?? "Unknown",
             email: snapshot.data()?['email'] as String? ?? "Unknown",
             age: snapshot.data()?['age'] as num? ?? 0,
+            friendList: snapshot.data()?['friendList'] as Map<dynamic,dynamic>? ?? {},
             gender: snapshot.data()?['gender'] as String? ?? "Unknown",
             status: snapshot.data()?['status'] as String? ?? "Unknown",
             uid: snapshot.data()?['uid'] as String? ?? "Unknown",
@@ -216,6 +218,15 @@ class ApplicationState extends ChangeNotifier {
     });
   }
 
+  Future<void> requestFriend(String myid, String friendid, Map<String,bool> myfriends, Map<String,bool> friendsFriends) async {
+    await FirebaseFirestore.instance.collection('user').doc(myid).update({
+        'friendList': myfriends
+    });
+    await FirebaseFirestore.instance.collection('user').doc(friendid).update({
+        'friendList': friendsFriends
+    });
+    notifyListeners();
+  }
 
   Future<void> gonggangOnOff(bool value) async {
     await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
