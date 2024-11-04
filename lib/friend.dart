@@ -28,6 +28,8 @@ class friendPageState extends State<friendPage> {
   }
 
   getfriendList() async {
+    friends={};
+    friendsNameStatus=[];
     DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -94,7 +96,9 @@ class friendPageState extends State<friendPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => FriendsRequestPage()),
-                );
+                ).then((_) async {
+                  await getfriendList();
+                });
               },
               child: Text('친구 요청', style: TextStyle(color: Colors.black)),
             ),
@@ -104,7 +108,10 @@ class friendPageState extends State<friendPage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => RecommendFriendsPage()),
-                );
+                ).then((_) async {
+                  await getfriendList();
+                });
+                setState((){});
               },
               child: Text('+ 추천 친구', style: TextStyle(color: Colors.black)),
             ),
@@ -165,27 +172,6 @@ class friendPageState extends State<friendPage> {
                 separatorBuilder: (context, index) => Divider(),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextButton(
-                onPressed: () {
-                  // Add new friend action
-                },
-                child: Text(
-                  '+ 친구 추가',
-                  style: TextStyle(color: Colors.greenAccent),
-                ),
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.article), label: '게시판'),
-            BottomNavigationBarItem(icon: Icon(Icons.people), label: '친구'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-            BottomNavigationBarItem(icon: Icon(Icons.location_on), label: '위치'),
-            BottomNavigationBarItem(icon: Icon(Icons.chat), label: '채팅'),
           ],
         ),
       );

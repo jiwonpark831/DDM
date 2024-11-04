@@ -34,6 +34,7 @@ class LoginPage extends StatelessWidget {
             'email': user.email ?? 'Unknown',
             'age': 0, // 기본값
             'gender': 'unknown', // 기본값
+            'dday': [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             'friendList': {},
             'joinedMeetings': [], // 기본값
             'joinedChats': [], // 기본값

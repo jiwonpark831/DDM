@@ -1,5 +1,6 @@
 import 'package:ddm/board.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'chat.dart';
 import 'friend.dart';
@@ -9,6 +10,7 @@ import 'setting.dart';
 import 'notification.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
+import 'dday_edit.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -85,6 +87,35 @@ class _mainPageState extends State<mainPage> {
     '편의점 가요',
     '한한 해요'
   ];
+  Text makeDDay(String title, String date, bool option){
+    if (title.isEmpty || date.isEmpty){
+      return Text(
+        'X',
+        style: TextStyle(color: Colors.black)
+      );
+    }
+    var difference = DateFormat("yyyy.MM.dd").parse(date).difference(DateTime.now()).inDays;
+    if (difference>0){
+      difference++;
+      return Text(
+        'D-$difference',
+        style: TextStyle(color: Colors.red)
+      );
+    }
+    else if (difference==0){
+      return Text(
+        'D-Day',
+        style: TextStyle(color: Colors.black)
+      );
+    }
+    else {
+      difference=-difference;
+      return Text(
+        'D+$difference',
+        style: TextStyle(color: Colors.blue)
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,15 +159,106 @@ class _mainPageState extends State<mainPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('종강', style: TextStyle(fontSize: 18)),
-                  Text('D-65', style: TextStyle(fontSize: 18, color: Colors.red)),
-                  Text('2학기', style: TextStyle(fontSize: 18)),
-                  Text('D+16', style: TextStyle(fontSize: 18, color: Colors.blue)),
-                ],
-              ),
+
+            Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 종강 카드
+                GestureDetector(
+                  onTap: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditPage(title: "종강")),
+                    // );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          appState.currentuser.dday[0]['title'].isEmpty ? 'X': appState.currentuser.dday[0]['title'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        makeDDay(appState.currentuser.dday[0]['title'],appState.currentuser.dday[0]['date'],appState.currentuser.dday[0]['option'])
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8), // 간격
+                // 2학기 카드
+                GestureDetector(
+                  onTap: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditPage(title: "2학기")),
+                    // );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          appState.currentuser.dday[1]['title'].isEmpty ? 'X':appState.currentuser.dday[1]['title'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        makeDDay(appState.currentuser.dday[1]['title'],appState.currentuser.dday[1]['date'],appState.currentuser.dday[1]['option'])
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8), // 간격
+                // 수정 버튼
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DDaySettingsPage()),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.chevron_right),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+
+
+
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     Text('종강', style: TextStyle(fontSize: 18)),
+              //     Text('D-65', style: TextStyle(fontSize: 18, color: Colors.red)),
+              //     Text('2학기', style: TextStyle(fontSize: 18)),
+              //     Text('D+16', style: TextStyle(fontSize: 18, color: Colors.blue)),
+              //   ],
+              // ),
+
+
+
+
+
+
+
               SizedBox(height: 20),
               SizedBox(height: 10),
 

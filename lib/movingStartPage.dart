@@ -41,6 +41,7 @@ Future signInWithGoogle_original() async {
           'age': 0, // 기본값
           'gender': 'unknown', // 기본값
           'friendList': {},
+          'dday': [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
           'joinedMeetings': [], // 기본값
           'joinedChats': [], // 기본값
           'gonggang': true, // 기본값

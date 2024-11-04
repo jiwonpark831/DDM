@@ -58,7 +58,7 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationState>(builder: (context, appState, _) {
+    return Consumer<ApplicationState>(builder: (context, appState, _)  {
       return Scaffold(
         appBar: AppBar(
           title: Text(' 친구 요청 ', style: TextStyle(color: Colors.black)),
@@ -104,7 +104,9 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
                   var friendsFriends = Map<String,bool>.from(friendDoc.get('friendList'));
                   appState.requestFriend(appState.currentuser.uid,friendsNameStatus[index]['uid'] as String, myFriends, friendsFriends);
                   print('수락');
-                  getfriendList();
+                  setState((){
+                    friendsNameStatus.removeAt(index);
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.greenAccent,
@@ -129,7 +131,9 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
                   friendsFriends.remove(appState.currentuser.uid);
                   appState.requestFriend(appState.currentuser.uid,friendsNameStatus[index]['uid'] as String, myFriends, friendsFriends);
                   print('거절');
-                  getfriendList();
+                  setState((){
+                    friendsNameStatus.removeAt(index);
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[300],

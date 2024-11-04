@@ -29,6 +29,7 @@ class ApplicationState extends ChangeNotifier {
   bool _loggedIn = false;
   bool get loggedIn => _loggedIn;
 
+  int requestCount = 0;
 
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
@@ -40,6 +41,7 @@ class ApplicationState extends ChangeNotifier {
             name: "Unknown",
             email:"Unknown",
             age: 0,
+            dday: [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             friendList: {},
             gender: "Unknown",
             status: "Unknown",
@@ -133,11 +135,13 @@ class ApplicationState extends ChangeNotifier {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .snapshots()
       .listen((snapshot) {
+        print(snapshot.data()?['dday']);
         currentuser=
           CurrentUser(
             name: snapshot.data()?['name'] as String? ?? "Unknown",
             email: snapshot.data()?['email'] as String? ?? "Unknown",
             age: snapshot.data()?['age'] as num? ?? 0,
+            dday: snapshot.data()?['dday'] as List<dynamic>? ?? [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             friendList: snapshot.data()?['friendList'] as Map<dynamic,dynamic>? ?? {},
             gender: snapshot.data()?['gender'] as String? ?? "Unknown",
             status: snapshot.data()?['status'] as String? ?? "Unknown",
@@ -149,6 +153,7 @@ class ApplicationState extends ChangeNotifier {
       notifyListeners();
     });
     print('subscribe finish!');
+
 
     FirebaseAuth.instance.userChanges().listen((user) async {
       // debugPrint(FirebaseAuth.instance.currentUser!.uid);
@@ -243,6 +248,35 @@ class ApplicationState extends ChangeNotifier {
     await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
       'status': value, // 기본값
     });
+  }
+  Future<void> changeDDay(String title, String date, bool option, int index) async {
+    var currentdday = currentuser.dday;
+    currentdday[index]={'title':title,'date':date,'option':option};
+    
+    await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
+      'dday': currentdday, // 기본값
+    });
+  }
+  Future<void> getFriendRequestCount() async {
+
+    DocumentSnapshot? userDoc = await FirebaseFirestore.instance
+      .collection('user')
+      .doc(currentuser!.uid)
+      .get();
+    print(currentuser!.uid);
+    print(userDoc.exists);
+      
+    Map<String, dynamic> friendList = userDoc.get('friendList');
+
+    Iterable<dynamic> values = friendList.values;
+    int count = 0;
+    for (var value in values){
+      print(value);
+      if (value == false){
+        count++;
+      }
+    }
+    requestCount = count;
   }
 
 
