@@ -77,10 +77,10 @@ class eachChatPage extends StatefulWidget {
 class _eachChatPageState extends State<eachChatPage> {
   final String userUid = FirebaseAuth.instance.currentUser!.uid;
 
-  void _sendMessage(String text) {
+  Future<void> _sendMessage(String text) async {
     final timestamp = FieldValue.serverTimestamp();
 
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatRoomId)
         .collection('messages')
@@ -90,7 +90,7 @@ class _eachChatPageState extends State<eachChatPage> {
       'timestamp': timestamp,
     });
 
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('chat')
         .doc(widget.chatRoomId)
         .update({
@@ -115,21 +115,31 @@ class _eachChatPageState extends State<eachChatPage> {
             return Center(child: CircularProgressIndicator());
           }
 
-          final messages = snapshot.data!.docs.map((doc) {
-            return types.TextMessage(
-              author: types.User(id: doc['senderId']),
-              createdAt: (doc['timestamp'] as Timestamp)
-                  .toDate()
-                  .millisecondsSinceEpoch,
-              id: doc.id,
-              text: doc['text'],
-            );
+          final messages = snapshot.data!.docs.map((doc){
+            if(doc['senderId']!=null && doc['timestamp']!=null && doc['text'] !=null){
+              return types.TextMessage(
+                author: types.User(id: doc['senderId']),
+                createdAt: (doc['timestamp'] as Timestamp)
+                    .toDate()
+                    .millisecondsSinceEpoch,
+                id: doc.id,
+                text: doc['text'],
+              );
+            }
+            else {
+              return types.TextMessage(
+                author: types.User(id: ''),
+                createdAt: 0,
+                id: '',
+                text: '',
+              );
+            }
           }).toList();
 
           return Chat(
             messages: messages,
-            onSendPressed: (partialText) {
-              _sendMessage(partialText.text);
+            onSendPressed: (partialText) async {
+              await _sendMessage(partialText.text);
             },
             user: types.User(id: userUid),
           );
