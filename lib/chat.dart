@@ -1,18 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:mime/mime.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class chatPage extends StatefulWidget {
   const chatPage({super.key});
@@ -27,16 +17,18 @@ class _chatPageState extends State<chatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat Rooms")),
+      appBar: AppBar(title: Text("내 채팅방")),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('chat')
             .where('members', arrayContains: userUid)
-            .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text("No chat rooms found."));
           }
 
           final chatRooms = snapshot.data!.docs;
@@ -45,9 +37,16 @@ class _chatPageState extends State<chatPage> {
             itemCount: chatRooms.length,
             itemBuilder: (context, index) {
               final chatRoom = chatRooms[index];
+
+              final lastMessage =
+                  chatRoom.get('lastMessage') ?? 'No messages yet';
+              final timestamp = chatRoom.get('timestamp') != null
+                  ? (chatRoom.get('timestamp') as Timestamp).toDate()
+                  : DateTime.now();
+
               return ListTile(
-                title: Text(chatRoom['lastMessage']),
-                subtitle: Text(chatRoom['timestamp'].toDate().toString()),
+                title: Text(lastMessage),
+                subtitle: Text('${timestamp.toString()}'),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -103,7 +102,7 @@ class _eachChatPageState extends State<eachChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat Room")),
+      appBar: AppBar(title: Text("여기 친구 uid 넣을 예정")),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('chat')

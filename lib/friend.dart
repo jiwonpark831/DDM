@@ -1,12 +1,14 @@
+// friendPage.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'recommend_friends.dart'; // Import the recommended friends page
+import 'chat.dart';
+import 'recommend_friends.dart';
 import 'friendsRequest.dart';
+import 'chat.dart'; // Import the chat page
 import 'package:provider/provider.dart';
 import 'app_state.dart';
-
-import 'user.dart';
 
 class friendPage extends StatefulWidget {
   const friendPage({super.key});
@@ -16,18 +18,9 @@ class friendPage extends StatefulWidget {
 }
 
 class friendPageState extends State<friendPage> {
-  // List<Map<String, String>> friends = [
-  //   {'name': '강시온', 'status': '휴학생 아닌 것 같다'},
-  //   {'name': '박지원', 'status': '공강메이트 구함 !!'},
-  //   {'name': '서규영', 'status': '촬영 바쁘다...!!'},
-  //   {'name': '송승언', 'status': '벌써 막학기'},
-  //   {'name': '최서은', 'status': '6학기 빡세다...ㅠㅠ'},
-  //   {'name': '소당골', 'status': '우리 앱 이름 뭐하지'},
-  //   {'name': '소다', 'status': '학회실 소라 3층'},
-  // ];
-  Map<String,bool> friends = {};
+  Map<String, bool> friends = {};
   List<Map<String, String>> friendsNameStatus = [];
-  
+
   @override
   void initState() {
     super.initState();
@@ -40,50 +33,51 @@ class friendPageState extends State<friendPage> {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     if (doc.data() != null && doc.get('friendList') != null) {
-      friends = Map<String,bool>.from(doc.get('friendList'));
+      friends = Map<String, bool>.from(doc.get('friendList'));
     }
 
-    for (var entry in friends.entries){
+    for (var entry in friends.entries) {
       String key = entry.key;
       bool value = entry.value;
-      if(value){
-        var friend = await FirebaseFirestore.instance.collection('user').doc(key).get();
-        if(friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) friendsNameStatus.add({'name':friend.get('name'), 'status':friend.get('status'), 'uid':friend.get('uid')});
+      if (value) {
+        var friend =
+            await FirebaseFirestore.instance.collection('user').doc(key).get();
+        if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) {
+          friendsNameStatus.add({
+            'name': friend.get('name'),
+            'status': friend.get('status'),
+            'uid': friend.get('uid')
+          });
+        }
       }
     }
-    
-    // friends.forEach((key, value) async {
-    //   print(key);
-    //   print(value);
-    //   if(value){
-    //     var friend = await FirebaseFirestore.instance.collection('user').doc(key).get();
-    //     print(friend.get('name'));
-    //     print(friend.get('status'));
-    //     print(friend.get('uid'));
-    //     print(friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]);
-    //     if(friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) friendsNameStatus.add({'name':friend.get('name'), 'status':friend.get('status'), 'uid':friend.get('uid')});
-    //   };
-    // });
-
-    // Map<Future<String>,Future<bool>> friendFetchFutures = friends.map((key, value) async {
-      
-    // },);
-    // List<Future<void>> friendFetchFutures = friends.map((uid,accept) async {
-    //   print(element['uid']);
-    //   print(element['accept']);
-    //   if(element['accept']){
-    //     var friend = await FirebaseFirestore.instance.collection('user').doc(element['uid']).get();
-    //     print(friend.get('name'));
-    //     print(friend.get('status'));
-    //     print(friend.get('uid'));
-    //     print(friend.get('accept'));
-    //     if(friend.get('accept')) friendsNameStatus.add({'name':friend.get('name'), 'status':friend.get('status'), 'uid':friend.get('uid')});
-    //   }
-    // }).();
-
-    // await Future.wait(friendFetchFutures);
-
     setState(() {});
+  }
+
+  Future<String> _getOrCreateChatRoom(String friendUid) async {
+    final String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+
+    QuerySnapshot chatRooms = await FirebaseFirestore.instance
+        .collection('chat')
+        .where('members', arrayContains: currentUserUid)
+        .get();
+
+    for (var room in chatRooms.docs) {
+      List<dynamic> members = room['members'];
+      if (members.contains(friendUid)) {
+        return room.id; // Existing chat room found
+      }
+    }
+
+    DocumentReference newChatRoom =
+        FirebaseFirestore.instance.collection('chat').doc();
+    await newChatRoom.set({
+      'members': [currentUserUid, friendUid],
+      'lastMessage': '',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    return newChatRoom.id;
   }
 
   @override
@@ -108,7 +102,8 @@ class friendPageState extends State<friendPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RecommendFriendsPage()),
+                  MaterialPageRoute(
+                      builder: (context) => RecommendFriendsPage()),
                 );
               },
               child: Text('+ 추천 친구', style: TextStyle(color: Colors.black)),
@@ -147,8 +142,18 @@ class friendPageState extends State<friendPage> {
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(friendsNameStatus[index]['status']!),
                     trailing: ElevatedButton(
-                      onPressed: () {
-                        // Start chat action
+                      onPressed: () async {
+                        String friendUid = friendsNameStatus[index]['uid']!;
+                        String chatRoomId =
+                            await _getOrCreateChatRoom(friendUid);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                eachChatPage(chatRoomId: chatRoomId),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.greenAccent,
