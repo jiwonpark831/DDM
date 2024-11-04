@@ -194,6 +194,8 @@ class _DDayItemState extends State<DDayItem> {
                             setState(() {
                               isExpanded = false;
                               appState.changeDDay('','',true,widget.index);
+                              titleController.text='';
+                              dateController.text='';
                             });
                           },
                           style: ElevatedButton.styleFrom(foregroundColor: Colors.greenAccent),
