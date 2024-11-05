@@ -20,7 +20,7 @@ class _boardPageState extends State<boardPage> {
   @override
   void initState() {
     super.initState();
-    userId = _auth.currentUser?.uid; 
+    userId = _auth.currentUser?.uid;
     fetchMeetings();
   }
 
@@ -239,23 +239,58 @@ class MeetingListPage extends StatelessWidget {
       ),
       body: ListView.builder(
         itemCount: meetings.length,
+        padding: EdgeInsets.all(16.0),
         itemBuilder: (context, index) {
           var meeting = meetings[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(meeting['imageUrl']),
+          return Card(
+            margin: EdgeInsets.only(bottom: 16.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
             ),
-            title: Text(meeting['title']),
-            subtitle: Text('${meeting['date']} - ${meeting['location']}'),
-            trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MeetingDetailPage(meetingData: meeting),
+            elevation: 3,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MeetingDetailPage(meetingData: meeting),
+                  ),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(meeting['imageUrl']),
+                      radius: 30,
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            meeting['title'],
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '${meeting['date']}\n ${meeting['location']}',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                  ],
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),
