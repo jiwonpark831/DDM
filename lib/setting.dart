@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -33,6 +34,12 @@ class _SettingsPageState extends State<SettingsPage> {
             title: Text('내 정보', style: TextStyle(fontSize: 16)),
             onTap: () {
               // Navigate to profile page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MyProfilePage(),
+                ),
+              );
             },
           ),
           ListTile(
