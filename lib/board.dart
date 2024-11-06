@@ -112,12 +112,12 @@ class _boardPageState extends State<boardPage> {
               },
             ),
             Divider(),
-            ListTile(
-              title: Text('찜한 모임'),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {},
-            ),
-            Divider(),
+            // ListTile(
+            //   title: Text('찜한 모임'),
+            //   trailing: Icon(Icons.arrow_forward_ios),
+            //   onTap: () {},
+            // ),
+            // Divider(),
             Center(
               child: TextButton(
                 onPressed: () {
@@ -178,7 +178,6 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
         isJoined = true;
       });
 
-      // 참여한 모임 새로고침
       final boardPageState = context.findAncestorStateOfType<_boardPageState>();
       boardPageState?.fetchMeetings();
     }
@@ -386,7 +385,6 @@ class EnterMeetingDetailsPage extends StatelessWidget {
               child: IconButton(
                 icon: Icon(Icons.camera_alt),
                 onPressed: () {
-                  // Logic to upload/select an image (this is a placeholder)
                 },
                 iconSize: 100,
               ),
@@ -477,7 +475,6 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
 
   Widget _buildDateOrDaysSelector() {
     if (widget.type == '단기') {
-      // Short-term: Calendar for date selection
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -497,7 +494,6 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
         ],
       );
     } else {
-      // Long-term: Day selection with ChoiceChips
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -532,7 +528,6 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
         SizedBox(height: 8),
         Row(
           children: [
-            // Hour dropdown
             DropdownButton<int>(
               value: _selectedTime.hour,
               items: List.generate(24, (index) {
@@ -551,7 +546,6 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
               },
             ),
             Text(" : "),
-            // Minute dropdown
             DropdownButton<int>(
               value: _selectedTime.minute,
               items: List.generate(60, (index) {
