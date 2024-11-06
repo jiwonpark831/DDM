@@ -43,6 +43,7 @@ class ApplicationState extends ChangeNotifier {
             age: 0,
             dday: [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             friendList: {},
+            schedule: [],
             gender: "Unknown",
             status: "Unknown",
             uid: "Unknown",
@@ -143,6 +144,7 @@ class ApplicationState extends ChangeNotifier {
             age: snapshot.data()?['age'] as num? ?? 0,
             dday: snapshot.data()?['dday'] as List<dynamic>? ?? [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             friendList: snapshot.data()?['friendList'] as Map<dynamic,dynamic>? ?? {},
+            schedule: snapshot.data()?['schedule'] as List<dynamic>? ?? [],
             gender: snapshot.data()?['gender'] as String? ?? "Unknown",
             status: snapshot.data()?['status'] as String? ?? "Unknown",
             uid: snapshot.data()?['uid'] as String? ?? "Unknown",
@@ -252,13 +254,12 @@ class ApplicationState extends ChangeNotifier {
   Future<void> changeDDay(String title, String date, bool option, int index) async {
     var currentdday = currentuser.dday;
     currentdday[index]={'title':title,'date':date,'option':option};
-    
+
     await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
       'dday': currentdday, // 기본값
     });
   }
   Future<void> getFriendRequestCount() async {
-
     DocumentSnapshot? userDoc = await FirebaseFirestore.instance
       .collection('user')
       .doc(currentuser!.uid)
@@ -277,6 +278,15 @@ class ApplicationState extends ChangeNotifier {
       }
     }
     requestCount = count;
+  }
+  
+  Future<void> profileUpdate(String name, String major, String studentNumber, String status, List<dynamic> schedule) async {
+    
+    await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
+      // 'name': name, // 기본값
+      'schedule': schedule,
+      // 'status': status
+    });
   }
 
 

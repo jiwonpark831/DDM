@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CurrentUser {
-  CurrentUser({required this.dday,required this.gender,required this.name,required this.friendList,required this.email,required this.age, required this.status, required this.uid, required this.tag_index, required this.gonggang});
+  CurrentUser({required this.dday,required this.schedule,required this.gender,required this.name,required this.friendList,required this.email,required this.age, required this.status, required this.uid, required this.tag_index, required this.gonggang});
 
   final String uid;
 
@@ -10,6 +10,8 @@ class CurrentUser {
   final String email;
   final num age;
   final String status;
+
+  // final String major;
 
   // final List<String> joinedMeetings;
   // final List<String> joinedChats;
@@ -22,7 +24,7 @@ class CurrentUser {
 
 
   // final String schedule;
-  // final List<dynamic> schedule;
+  final List<dynamic> schedule;
   // final dynamic schedule;
 
   // final Timestamp createdTime;
