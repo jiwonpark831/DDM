@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'movingStartPage.dart';
 import 'profile.dart';
 
 
@@ -87,14 +90,31 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             leading: Icon(Icons.logout, color: Colors.grey),
             title: Text('로그아웃', style: TextStyle(fontSize: 16)),
-            onTap: () {
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => StartPage()),
+              );
               // Handle logout
             },
           ),
           SizedBox(height: 20),
           Center(
             child: TextButton(
-              onPressed: () {
+              onPressed: () async {
+              User? user = FirebaseAuth.instance.currentUser;
+              if (user != null){
+                await FirebaseFirestore.instance
+                      .collection('users') // 컬렉션 이름
+                      .doc(FirebaseAuth.instance.currentUser!.uid) // 삭제할 문서의 UID
+                      .delete();
+                await user.delete();
+              }
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => StartPage()),
+              );
                 // Handle account deletion
               },
               child: Text(

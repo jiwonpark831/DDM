@@ -129,7 +129,7 @@ class _mainPageState extends State<mainPage> {
       if (value) {
         var friend =
             await FirebaseFirestore.instance.collection('user').doc(key).get();
-        if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) {
+        if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid] && friend.get('gonggang')) {
           friendsNameStatus.add({
             'name': friend.get('name'),
             'status': friend.get('status'),

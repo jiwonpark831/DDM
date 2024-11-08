@@ -48,7 +48,8 @@ class friendPageState extends State<friendPage> {
           friendsNameStatus.add({
             'name': friend.get('name'),
             'status': friend.get('status'),
-            'uid': friend.get('uid')
+            'uid': friend.get('uid'),
+            'imageURL': friend.get('imageURL')
           });
         }
       }
@@ -142,8 +143,7 @@ class friendPageState extends State<friendPage> {
                   return ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundColor: Colors.blue[100],
-                      child: Icon(Icons.person, color: Colors.black),
+                      backgroundImage: NetworkImage(friendsNameStatus[index]['imageURL'] as String),
                     ),
                     title: Text(friendsNameStatus[index]['name']!,
                         style: TextStyle(fontWeight: FontWeight.bold)),
