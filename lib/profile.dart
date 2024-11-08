@@ -14,36 +14,31 @@ class MyProfilePage extends StatefulWidget {
 
 class _MyProfilePageState extends State<MyProfilePage> {
   // 예제 데이터
-  String name = "000";
-  String major = "전산전자공학부";
-  String year = "23학번";
-  String intro = "공강메이트 많다부 ~";
-  String imageUrl = "https://via.placeholder.com/150";
 
   // 편집 페이지로 이동
-  void _goToEditPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditProfilePage(
-          name: name,
-          major: major,
-          year: year,
-          intro: intro,
-          imageUrl: imageUrl,
-          onSave: (newName, newMajor, newYear, newIntro, newImageUrl) {
-            setState(() {
-              name = newName;
-              major = newMajor;
-              year = newYear;
-              intro = newIntro;
-              imageUrl = newImageUrl;
-            });
-          },
-        ),
-      ),
-    );
-  }
+  // void _goToEditPage() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => EditProfilePage(
+  //         name: name,
+  //         major: major,
+  //         year: year,
+  //         intro: intro,
+  //         imageUrl: imageUrl,
+  //         onSave: (newName, newMajor, newYear, newIntro, newImageUrl) {
+  //           setState(() {
+  //             name = newName;
+  //             major = newMajor;
+  //             year = newYear;
+  //             intro = newIntro;
+  //             imageUrl = newImageUrl;
+  //           });
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _TimetablePreview(List<dynamic> schedule) {
     List<Event> eventList = [];
@@ -120,7 +115,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
           actions: [
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: _goToEditPage,
+              onPressed: ((){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProfilePage()
+                  ),
+                );
+              })
             ),
           ],
         ),
@@ -129,15 +131,15 @@ class _MyProfilePageState extends State<MyProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // CircleAvatar(
-              //   radius: 50,
-              //   backgroundImage: NetworkImage(imageUrl),
-              // ),
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(appState.currentuser.imageURL),
+              ),
               SizedBox(height: 20),
-              Text("이름: $name", style: TextStyle(fontSize: 18)),
-              Text("전공: $major", style: TextStyle(fontSize: 18)),
-              Text("학번: $year", style: TextStyle(fontSize: 18)),
-              Text("소개: $intro", style: TextStyle(fontSize: 18)),
+              Text("이름: ${appState.currentuser.name}", style: TextStyle(fontSize: 18)),
+              Text("전공: ${appState.currentuser.major}", style: TextStyle(fontSize: 18)),
+              Text("학번: ${appState.currentuser.year}", style: TextStyle(fontSize: 18)),
+              Text("소개: ${appState.currentuser.status}", style: TextStyle(fontSize: 18)),
               SizedBox(height: 20),
               SizedBox(
                 height: 500,
@@ -152,21 +154,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
 }
 
 class EditProfilePage extends StatefulWidget {
-  final String name;
-  final String major;
-  final String year;
-  final String intro;
-  final String imageUrl;
-  final Function(String, String, String, String, String) onSave;
-
-  EditProfilePage({
-    required this.name,
-    required this.major,
-    required this.year,
-    required this.intro,
-    required this.imageUrl,
-    required this.onSave,
-  });
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -177,6 +164,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController majorController = TextEditingController();
   TextEditingController yearController = TextEditingController();
   TextEditingController introController = TextEditingController();
+
   File? _imageFile;
   final _picker = ImagePicker();
   String? _imageUrl;
@@ -186,11 +174,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.name;
-    majorController.text = widget.major;
-    yearController.text = widget.year;
-    introController.text = widget.intro;
-    _imageUrl = widget.imageUrl;
   }
 
 
@@ -199,23 +182,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
+        _imageUrl = pickedFile.path;
       });
     }
   }
 
   void _saveProfile() {
-    widget.onSave(
-      nameController.text,
-      majorController.text,
-      yearController.text,
-      introController.text,
-      _imageFile != null ? _imageFile!.path : _imageUrl!,
-    );
     Navigator.pop(context);
   }
 
   Widget _Timetable(List<dynamic> schedule) {
     List<Event> eventList = [];
+    userSchedule=schedule;
     schedule.forEach((element) {
       eventList.add(Event(
         title: element['content'],
@@ -259,8 +237,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 List<dynamic> tmp = [];
                 eventList.forEach((cur_event){
                   tmp.add({'title':cur_event.title,'content':cur_event.title,'time':{'column':cur_event.columnIndex,'row':cur_event.rowIndex},'color':cur_event.color!.value});
+                  // print(tmp);
                 });
+                // setState((){
                 userSchedule=tmp;
+                print(userSchedule);
+                // });
               },
               updateOnPressed: (event) { // when an event updated from your list
                 // Your code after event updated.
@@ -268,7 +250,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 eventList.forEach((cur_event){
                   tmp.add({'title':cur_event.title,'content':cur_event.title,'time':{'column':cur_event.columnIndex,'row':cur_event.rowIndex},'color':cur_event.color!.value});
                 });
+                // setState((){
                 userSchedule=tmp;
+                print(userSchedule);
+                // });
               }, 
               deleteOnPressed: (event) { // when an event deleted from your list
                 // Your code after event deleted.
@@ -276,7 +261,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 eventList.forEach((cur_event){
                   tmp.add({'title':cur_event.title,'content':cur_event.title,'time':{'column':cur_event.columnIndex,'row':cur_event.rowIndex},'color':cur_event.color!.value});
                 });
+                // setState((){
                 userSchedule=tmp;
+                print(userSchedule);
+                // });
               }, 
             ),
           ),])
@@ -287,6 +275,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(builder: (context, appState, _) {
       // print(appState.currentuser.schedule);
+      nameController.text = appState.currentuser.name;
+      majorController.text = appState.currentuser.major;
+      yearController.text = appState.currentuser.year.toString();
+      introController.text = appState.currentuser.status;
+
+
       return Scaffold(
         appBar: AppBar(
           title: Text("내 정보 편집"),
@@ -294,26 +288,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
             icon: Icon(Icons.close),
             onPressed: () => Navigator.pop(context),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.save),
+              onPressed: ((){
+                  appState.profileUpdate(nameController.text, majorController.text, yearController.text, introController.text, userSchedule);
+                  print(_imageUrl);
+                  if(_imageUrl != null){
+                  appState.profileImage(_imageUrl as String);
+                  }
+                  Navigator.pop(context);
+              })
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // GestureDetector(
-              //   onTap: _pickImage,
-              //   child: CircleAvatar(
-              //     radius: 50,
-              //     backgroundImage: _imageFile != null
-              //         ? FileImage(_imageFile!)
-              //         : NetworkImage(_imageUrl!) as ImageProvider,
-              //     child: Icon(
-              //       Icons.camera_alt,
-              //       size: 30,
-              //       color: Colors.white.withOpacity(0.8),
-              //     ),
-              //   ),
-              // ),
+              GestureDetector(
+                onTap: (() async {
+                  var pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    setState(() {
+                      _imageFile = File(pickedFile.path);
+                      _imageUrl = pickedFile.path;
+                    });
+                  }
+                  print(pickedFile!.path);
+                }),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: _imageFile != null
+                      ? FileImage(_imageFile!)
+                      : NetworkImage(appState.currentuser.imageURL) as ImageProvider,
+                  child: Icon(
+                    Icons.camera_alt,
+                    size: 30,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+              ),
               SizedBox(height: 20),
               TextField(
                 controller: nameController,
@@ -340,6 +356,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ElevatedButton(
                 onPressed: ((){
                   appState.profileUpdate(nameController.text, majorController.text, yearController.text, introController.text, userSchedule);
+                  print(_imageUrl);
+                  if(_imageUrl != null){
+                  appState.profileImage(_imageUrl as String);
+                  }
                   Navigator.pop(context);
                 }),
                 style: ElevatedButton.styleFrom(foregroundColor: Colors.greenAccent),

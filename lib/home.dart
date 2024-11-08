@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ddm/board/board.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,6 +13,8 @@ import 'notification.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
 import 'dday_edit.dart';
+
+import 'profile.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -97,6 +101,45 @@ class _mainPageState extends State<mainPage> {
       difference = -difference;
       return Text('D+$difference', style: TextStyle(color: Colors.blue));
     }
+  }
+
+  Map<String, bool> friends = {};
+  List<Map<String, String>> friendsNameStatus = [];
+  
+  @override
+  void initState() {
+    super.initState();
+    getfriendList();
+  }
+  
+  getfriendList() async {
+    friends={};
+    friendsNameStatus=[];
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    if (doc.data() != null && doc.get('friendList') != null) {
+      friends = Map<String, bool>.from(doc.get('friendList'));
+    }
+
+    for (var entry in friends.entries) {
+      String key = entry.key;
+      bool value = entry.value;
+      if (value) {
+        var friend =
+            await FirebaseFirestore.instance.collection('user').doc(key).get();
+        if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) {
+          friendsNameStatus.add({
+            'name': friend.get('name'),
+            'status': friend.get('status'),
+            'uid': friend.get('uid'),
+            'imageURL': friend.get('imageURL')
+          });
+        }
+      }
+    }
+    setState(() {});
   }
 
   @override
@@ -270,14 +313,23 @@ class _mainPageState extends State<mainPage> {
                   // 프로필 이미지
                   Column(
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 70,
-                        child: Image.network(
-                          // default image sdf
-                          'https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86',
-                          width: 200,
-                        ),
+                      GestureDetector(
+                        onTap: ((){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MyProfilePage()),
+                          );
+                        }),
+                        child:
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 70,
+                            child: Image.network(
+                              // default image
+                              appState.currentuser.imageURL,
+                              width: 200,
+                            ),
+                          ),
                       ),
                       SizedBox(height: 4),
                       // 이름
@@ -415,17 +467,43 @@ class _mainPageState extends State<mainPage> {
                 '현재 친구의 공강 상태를 확인하세요!',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CircleAvatar(radius: 30),
-                  CircleAvatar(radius: 30),
-                  CircleAvatar(radius: 30),
-                  CircleAvatar(radius: 30),
-                  CircleAvatar(radius: 30),
-                ],
+              SizedBox(height: 20),
+
+
+
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child:Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: ((){
+                    return List.generate(friendsNameStatus.length, (index) {
+                      return Container(
+                        width: 80,
+                        height: 80,
+                        child: Column(children: [
+                          GestureDetector(
+                            onTap: (() {
+                              debugPrint(friendsNameStatus[index]['imageURL']);
+                              debugPrint(friendsNameStatus[index]['name']);
+                              debugPrint(friendsNameStatus[index]['status']);
+                              debugPrint(friendsNameStatus[index]['uid']);
+                            }),
+                            child: CircleAvatar(
+                              radius: 24,
+                              backgroundImage: NetworkImage(friendsNameStatus[index]['imageURL'] as String),
+                            ),
+                          ),
+                          SizedBox(height: 3,),
+                          Text(friendsNameStatus[index]['name'] as String)
+                        ],
+                      )
+                    ); 
+                    });
+                  })()
+                  ,
+                )
               ),
+
               SizedBox(height: 20),
               Text(
                 '내 친구들이 모인 게시판을 확인하세요!',

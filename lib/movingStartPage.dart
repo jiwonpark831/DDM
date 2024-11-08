@@ -37,9 +37,11 @@ Future signInWithGoogle_original() async {
         await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
           'uid': user.uid,
           'name': user.displayName ?? 'Unknown',
+          'imageURL': "https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86",
           'email': user.email ?? 'Unknown',
-          'age': 0, // 기본값
-          'gender': 'unknown', // 기본값
+          'year': "0", // 기본값
+          'major': "Unknown",
+          'gender': 'Unknown', // 기본값
           'friendList': {},
           'dday': [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
           'joinedMeetings': [], // 기본값

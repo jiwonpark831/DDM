@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart'; // new
 // import 'package:finalterm/home.dart';
 import 'package:firebase_auth/firebase_auth.dart'
@@ -8,11 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:location/location.dart';
-
 import 'dart:async';
-
 import 'firebase_options.dart';
-
 import 'user.dart';
 
 
@@ -33,6 +32,8 @@ class ApplicationState extends ChangeNotifier {
 
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
+  List<CurrentUser> gonggangFriends = [];
+
   final Location location = new Location();
   LocationData? _locationData;
 
@@ -40,7 +41,9 @@ class ApplicationState extends ChangeNotifier {
           CurrentUser(
             name: "Unknown",
             email:"Unknown",
-            age: 0,
+            imageURL: "https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86",
+            year: "0",
+            major: "Unknown",
             dday: [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             friendList: {},
             schedule: [],
@@ -141,7 +144,9 @@ class ApplicationState extends ChangeNotifier {
           CurrentUser(
             name: snapshot.data()?['name'] as String? ?? "Unknown",
             email: snapshot.data()?['email'] as String? ?? "Unknown",
-            age: snapshot.data()?['age'] as num? ?? 0,
+            imageURL: snapshot.data()?['imageURL'] as String? ?? "https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86",
+            year: snapshot.data()?['year'] as String? ?? "0",
+            major: snapshot.data()?['major'] as String? ?? "Unknown",
             dday: snapshot.data()?['dday'] as List<dynamic>? ?? [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
             friendList: snapshot.data()?['friendList'] as Map<dynamic,dynamic>? ?? {},
             schedule: snapshot.data()?['schedule'] as List<dynamic>? ?? [],
@@ -280,14 +285,30 @@ class ApplicationState extends ChangeNotifier {
     requestCount = count;
   }
   
-  Future<void> profileUpdate(String name, String major, String studentNumber, String status, List<dynamic> schedule) async {
+  Future<void> profileUpdate(String name, String major, String year, String status, List<dynamic> schedule) async {
     
     await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
-      // 'name': name, // 기본값
+      'name': name, 
       'schedule': schedule,
-      // 'status': status
+      'major': major,
+      'year': year,
+      'status': status
     });
   }
+  Future<void> profileImage(String imagePath) async {
+    var file = File(imagePath);
+    
+    
+    await FirebaseStorage.instance.ref('/${currentuser.uid}.png').putFile(file);
+
+    var imageURL = await FirebaseStorage.instance.ref().child('/${currentuser.uid}.png').getDownloadURL();
+    
+    await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
+      'imageURL': imageURL,
+    });
+  }
+
+
 
 
   // Future<DocumentReference> addMessageToGuestBook(String message) {
