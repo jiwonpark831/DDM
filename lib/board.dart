@@ -59,7 +59,7 @@ class _boardPageState extends State<boardPage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
             SizedBox(
-              height: 160,
+              height: 250,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: myMeetings.length,
@@ -140,15 +140,24 @@ class MeetingDetailPage extends StatefulWidget {
   _MeetingDetailPageState createState() => _MeetingDetailPageState();
 }
 
-class _MeetingDetailPageState extends State<MeetingDetailPage> {
+class _MeetingDetailPageState extends State<MeetingDetailPage>
+    with SingleTickerProviderStateMixin {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
   bool isJoined = false;
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
     checkIfJoined();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 
   void checkIfJoined() {
@@ -171,9 +180,6 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
       setState(() {
         isJoined = true;
       });
-
-      final boardPageState = context.findAncestorStateOfType<_boardPageState>();
-      boardPageState?.fetchMeetings();
     }
   }
 
@@ -197,29 +203,26 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
             ),
             if (isJoined && widget.meetingData['type'] == '장기') ...[
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SharedCalendarPage(
-                          meetingId: widget.meetingData['id']),
+              _tabController == null
+                  ? CircularProgressIndicator()
+                  : TabBar(
+                      controller: _tabController,
+                      tabs: [
+                        Tab(text: '공유 캘린더'),
+                        Tab(text: '게시판'),
+                      ],
                     ),
-                  );
-                },
-                child: Text('공유 캘린더 보기'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
+              Expanded(
+                child: _tabController == null
+                    ? Container()
+                    : TabBarView(
+                        controller: _tabController,
+                        children: [
+                          SharedCalendarPage(
+                              meetingId: widget.meetingData['id']),
                           SharedBoardPage(meetingId: widget.meetingData['id']),
-                    ),
-                  );
-                },
-                child: Text('게시판 보기'),
+                        ],
+                      ),
               ),
             ],
           ],
@@ -228,6 +231,8 @@ class _MeetingDetailPageState extends State<MeetingDetailPage> {
     );
   }
 }
+
+// Define SharedCalendarPage and SharedBoardPage classes as before
 
 class MeetingListPage extends StatelessWidget {
   final List<Map<String, dynamic>> meetings;
@@ -267,7 +272,13 @@ class MeetingListPage extends StatelessWidget {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: NetworkImage(meeting['imageUrl']),
+                      backgroundImage: meeting['imageUrl'] != null
+                          ? (meeting['imageUrl'].startsWith('http')
+                                  ? NetworkImage(meeting['imageUrl'])
+                                  : FileImage(File(meeting['imageUrl'])))
+                              as ImageProvider
+                          : NetworkImage(
+                              'https://your-default-image-url.com/default.jpg'),
                       radius: 30,
                     ),
                     SizedBox(width: 16),
@@ -310,10 +321,18 @@ class MeetingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isLocalFile = meetingData['imageUrl'] != null &&
+        File(meetingData['imageUrl']).existsSync();
+    final imageWidget = isLocalFile
+        ? FileImage(File(meetingData['imageUrl']))
+        : NetworkImage(meetingData['imageUrl'] ??
+            'https://your-default-image-url.com/default.jpg');
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 250,
+        height: 250,
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
@@ -322,15 +341,35 @@ class MeetingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              meetingData['title'],
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Center(
+              child: CircleAvatar(
+                backgroundImage: imageWidget as ImageProvider,
+                radius: 40,
+              ),
             ),
             SizedBox(height: 8),
-            Text('주최자: ${meetingData['organizer']}'),
-            Text('날짜: ${meetingData['date']}'),
-            Text('시간: ${meetingData['time']}'),
-            Text('장소: ${meetingData['location']}'),
+            Text(
+              meetingData['title'] ?? '',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            SizedBox(height: 8),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('주최자: ${meetingData['organizer'] ?? ''}',
+                      overflow: TextOverflow.ellipsis),
+                  Text('날짜: ${meetingData['date'] ?? ''}',
+                      overflow: TextOverflow.ellipsis),
+                  Text('시간: ${meetingData['time'] ?? ''}',
+                      overflow: TextOverflow.ellipsis),
+                  Text('장소: ${meetingData['location'] ?? ''}',
+                      overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -442,45 +481,42 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("공유 캘린더")),
-      body: Column(
-        children: [
-          TableCalendar(
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2100, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-            eventLoader: (day) {
-              return _events
-                  .where((event) =>
-                      event['date'] == day.toIso8601String().split('T').first)
-                  .toList();
-            },
+    return Column(
+      children: [
+        TableCalendar(
+          firstDay: DateTime.utc(2020, 1, 1),
+          lastDay: DateTime.utc(2100, 12, 31),
+          focusedDay: _focusedDay,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay;
+            });
+          },
+          eventLoader: (day) {
+            return _events
+                .where((event) =>
+                    event['date'] == day.toIso8601String().split('T').first)
+                .toList();
+          },
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: _showAddEventDialog,
+          child: Text("일정 추가"),
+        ),
+        Expanded(
+          child: ListView(
+            children: _events.map((event) {
+              return ListTile(
+                title: Text(event['title']),
+                subtitle: Text("날짜: ${event['date']}"),
+              );
+            }).toList(),
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _showAddEventDialog,
-            child: Text("일정 추가"),
-          ),
-          Expanded(
-            child: ListView(
-              children: _events.map((event) {
-                return ListTile(
-                  title: Text(event['title']),
-                  subtitle: Text("날짜: ${event['date']}"),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -527,37 +563,34 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("게시판")),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _posts.length,
-              itemBuilder: (context, index) {
-                var post = _posts[index];
-                return ListTile(
-                  title: Text(post['content']),
-                  subtitle: Text(post['timestamp'].toDate().toString()),
-                );
-              },
-            ),
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: _posts.length,
+            itemBuilder: (context, index) {
+              var post = _posts[index];
+              return ListTile(
+                title: Text(post['content']),
+                subtitle: Text(post['timestamp'].toDate().toString()),
+              );
+            },
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _postController,
-              decoration: InputDecoration(
-                labelText: '새 게시물 작성',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () => addPost(_postController.text),
-                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: _postController,
+            decoration: InputDecoration(
+              labelText: '새 게시물 작성',
+              suffixIcon: IconButton(
+                icon: Icon(Icons.send),
+                onPressed: () => addPost(_postController.text),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
