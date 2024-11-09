@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'chat/chat.dart';
-import 'friend.dart';
+import 'friend/friend.dart';
 import 'map.dart';
 
 import 'setting.dart';

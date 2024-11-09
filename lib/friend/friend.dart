@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'chat/chat.dart';
-import 'chat/eachchat.dart';
+import '../chat/chat.dart';
+import '../chat/eachchat.dart';
 import 'recommend_friends.dart';
 import 'friendsRequest.dart';
-import 'chat/chat.dart';
+import '../chat/chat.dart';
 import 'package:provider/provider.dart';
-import 'app_state.dart';
+import '../app_state.dart';
 
 class friendPage extends StatefulWidget {
   const friendPage({super.key});
@@ -67,7 +67,7 @@ class friendPageState extends State<friendPage> {
     for (var room in chatRooms.docs) {
       List<dynamic> members = room['members'];
       if (members.contains(friendUid)) {
-        return room.id; // Existing chat room found
+        return room.id;
       }
     }
 
@@ -86,7 +86,9 @@ class friendPageState extends State<friendPage> {
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(builder: (context, appState, _) {
       return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
+          centerTitle: false,
           title: Text('내 친구', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           elevation: 0,
@@ -102,38 +104,45 @@ class friendPageState extends State<friendPage> {
               },
               child: Text('친구 요청', style: TextStyle(color: Colors.black)),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => RecommendFriendsPage()),
-                ).then((_) async {
-                  await getfriendList();
-                });
-                setState(() {});
-              },
-              child: Text('+ 추천 친구', style: TextStyle(color: Colors.black)),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RecommendFriendsPage()),
+                  ).then((_) async {
+                    await getfriendList();
+                  });
+                  setState(() {});
+                },
+                child: Text('+ 추천 친구', style: TextStyle(color: Colors.black)),
+              ),
             ),
           ],
           leading: SizedBox(),
         ),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: '친구를 검색해보세요',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Container(
+            //     height: 40,
+            //     width: 350,
+            //     child: TextField(
+            //       decoration: InputDecoration(
+            //         hintText: '친구를 검색해보세요',
+            //         prefixIcon: Icon(Icons.search),
+            //         border: OutlineInputBorder(
+            //           borderRadius: BorderRadius.circular(8.0),
+            //         ),
+            //         filled: true,
+            //         fillColor: Colors.grey[200],
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.all(8.0),
@@ -164,8 +173,12 @@ class friendPageState extends State<friendPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.greenAccent,
+                        elevation: 0,
                       ),
-                      child: Text('1:1 채팅'),
+                      child: Text(
+                        '1:1 채팅',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   );
                 },

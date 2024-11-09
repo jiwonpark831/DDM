@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'app_state.dart';
+import '../app_state.dart';
 
 class RecommendFriendsPage extends StatefulWidget {
   const RecommendFriendsPage({super.key});
@@ -22,9 +22,9 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
   //   {'name': '친구 7', 'status': '학회실 소라 3층'},
   //   {'name': '친구 8', 'status': '글로컬 경축'},
   // ];
-  Map<String,bool> friends = {};
+  Map<String, bool> friends = {};
   List<Map<String, String>> recommendedFriends = [];
-  
+
   @override
   void initState() {
     super.initState();
@@ -32,29 +32,29 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
   }
 
   getuserList() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('user').get();
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('user').get();
 
     DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     if (doc.data() != null && doc.get('friendList') != null) {
-      friends = Map<String,bool>.from(doc.get('friendList'));
+      friends = Map<String, bool>.from(doc.get('friendList'));
     }
 
     for (var doc in querySnapshot.docs) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      if(data['uid'] == FirebaseAuth.instance.currentUser!.uid) continue;
-      var friendCheck=false;
-      for (var entry in friends.entries){
+      if (data['uid'] == FirebaseAuth.instance.currentUser!.uid) continue;
+      var friendCheck = false;
+      for (var entry in friends.entries) {
         String key = entry.key;
-        if(key == data['uid']) friendCheck=true;
+        if (key == data['uid']) friendCheck = true;
       }
-      if(friendCheck) continue;
-      recommendedFriends.add({'name':data['name'], 'status':data['status'], 'uid':data['uid']});
+      if (friendCheck) continue;
+      recommendedFriends.add(
+          {'name': data['name'], 'status': data['status'], 'uid': data['uid']});
     }
-
 
     // List<Future<void>> friendFetchFutures = friends.map((element) async {
     //   print(element['uid']);
@@ -74,16 +74,19 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(builder: (context, appState, _) {
       return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('👋새로운 친구를 찾아보세요!', style: TextStyle(color: Colors.black)),
+          centerTitle: false,
+          title:
+              Text('👋 새로운 친구를 찾아보세요!', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+          // leading: IconButton(
+          //   icon: Icon(Icons.arrow_back, color: Colors.grey),
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
         ),
         body: ListView.separated(
           padding: EdgeInsets.all(8.0),
@@ -99,26 +102,34 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(recommendedFriends[index]['status']!),
               trailing: ElevatedButton(
-                onPressed: ()async {
-                  // Add friend action
+                onPressed: () async {
                   DocumentSnapshot doc = await FirebaseFirestore.instance
                       .collection('user')
                       .doc(FirebaseAuth.instance.currentUser!.uid)
                       .get();
-                  var myFriends = Map<String,bool>.from(doc.get('friendList'));
-                  myFriends[recommendedFriends[index]['uid'] as String]=true;
+                  var myFriends = Map<String, bool>.from(doc.get('friendList'));
+                  myFriends[recommendedFriends[index]['uid'] as String] = true;
                   DocumentSnapshot friendDoc = await FirebaseFirestore.instance
                       .collection('user')
                       .doc(recommendedFriends[index]['uid'])
                       .get();
-                  var friendsFriends = Map<String,bool>.from(friendDoc.get('friendList'));
-                  friendsFriends[appState.currentuser.uid]=false;
-                  appState.requestFriend(appState.currentuser.uid,recommendedFriends[index]['uid'] as String, myFriends, friendsFriends);
+                  var friendsFriends =
+                      Map<String, bool>.from(friendDoc.get('friendList'));
+                  friendsFriends[appState.currentuser.uid] = false;
+                  appState.requestFriend(
+                      appState.currentuser.uid,
+                      recommendedFriends[index]['uid'] as String,
+                      myFriends,
+                      friendsFriends);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.greenAccent,
+                  backgroundColor: Color(0xff6AEFC0),
+                  elevation: 0,
                 ),
-                child: Text('친구 추가'),
+                child: Text(
+                  '친구 추가',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             );
           },
