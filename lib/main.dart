@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // import 'home.dart';
-import 'movingStartPage.dart';
+import 'login/startPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized(); 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   runApp(ChangeNotifierProvider(

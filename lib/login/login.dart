@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'home.dart';
+import '../home.dart';
+import '../theme/color.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -24,19 +25,29 @@ class LoginPage extends StatelessWidget {
 
       if (user != null) {
         // Step 5. Firestore에 사용자 기본 정보가 있는지 확인
-        final userDoc = await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('user')
+            .doc(user.uid)
+            .get();
 
         if (!userDoc.exists) {
           // Step 6. 새 사용자일 경우 Firestore에 기본값 저장
-          await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(user.uid)
+              .set({
             'uid': user.uid,
             'name': user.displayName ?? 'Unknown',
-            'imageURL':"https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86",
+            'imageURL':
+                "https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86",
             'email': user.email ?? 'Unknown',
             'year': "0", // 기본값
             'major': "Unknown", // 기본값
             'gender': 'Unknown', // 기본값
-            'dday': [{'date':'','option':true,'title':''},{'date':'','option':true,'title':''}],
+            'dday': [
+              {'date': '', 'option': true, 'title': ''},
+              {'date': '', 'option': true, 'title': ''}
+            ],
             'friendList': {},
             'joinedMeetings': [], // 기본값
             'joinedChats': [], // 기본값
@@ -51,10 +62,6 @@ class LoginPage extends StatelessWidget {
         }
       }
 
-
-
-      
-
       // 로그인 성공 시 홈 페이지로 이동 (예: Navigator.pushReplacement)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("로그인에 성공했습니다.")),
@@ -65,7 +72,6 @@ class LoginPage extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => homePage()),
       );
-
     } on FirebaseAuthException catch (e) {
       // 로그인 오류 처리
       String message = "로그인에 실패했습니다.";
@@ -86,7 +92,9 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text("로그인하기"),
       ),
       body: Padding(
@@ -113,10 +121,14 @@ class LoginPage extends StatelessWidget {
               onPressed: () {
                 _loginUser(context);
               },
-              child: Text("로그인하기"),
+              child: Text(
+                "로그인하기",
+                style: TextStyle(color: Colors.black),
+              ),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.green[200],
-                minimumSize: Size(double.infinity, 50), // 버튼이 가로로 꽉 차도록 설정
+                backgroundColor: AppColor.primary,
+                minimumSize: Size(double.infinity, 50),
+                elevation: 0,
               ),
             ),
           ],

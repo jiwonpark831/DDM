@@ -1,22 +1,27 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/color.dart';
+
 class SignupPage extends StatelessWidget {
   // TextEditingController 생성
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text("이메일로 시작하기"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back),
+        //   onPressed: () => Navigator.pop(context),
+        // ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -45,7 +50,8 @@ class SignupPage extends StatelessWidget {
               ),
             ),
             TextField(
-              controller: confirmPasswordController, // 비밀번호 확인 TextField에 컨트롤러 연결
+              controller:
+                  confirmPasswordController, // 비밀번호 확인 TextField에 컨트롤러 연결
               obscureText: true,
               decoration: InputDecoration(
                 labelText: "비밀번호 확인",
@@ -73,11 +79,12 @@ class SignupPage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("비밀번호가 일치하지 않습니다.")),
                   );
-                } 
+                }
 
                 try {
                   // Firebase Auth를 사용하여 계정 생성
-                  UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  UserCredential userCredential = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
                     email: email,
                     password: password,
                   );
@@ -86,7 +93,7 @@ class SignupPage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("계정이 성공적으로 생성되었습니다.")),
                   );
-                  
+
                   Navigator.pop(context);
 
                   // 사용자 추가 로직, 예: Firestore에 추가 사용자 정보 저장
@@ -105,11 +112,15 @@ class SignupPage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(message)),
                   );
-                }                
+                }
               },
-              child: Text("계정 만들기"),
+              child: Text(
+                "계정 만들기",
+                style: TextStyle(color: Colors.black),
+              ),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.green[200],
+                elevation: 0,
+                backgroundColor: AppColor.primary,
                 minimumSize: Size(double.infinity, 50), // 버튼이 가로로 꽉 차도록 설정
               ),
             ),
