@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'chat.dart';
+import 'chat/chat.dart';
 import 'friend.dart';
 import 'map.dart';
 
@@ -43,6 +43,7 @@ class _homePageState extends State<homePage> {
     return Scaffold(
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         selectedItemColor: Color(0xff64DCAC),
         unselectedItemColor: Color(0xff1C1B1F),
         selectedLabelStyle: TextStyle(color: Color(0xff64DCAC)),
@@ -105,16 +106,16 @@ class _mainPageState extends State<mainPage> {
 
   Map<String, bool> friends = {};
   List<Map<String, String>> friendsNameStatus = [];
-  
+
   @override
   void initState() {
     super.initState();
     getfriendList();
   }
-  
+
   getfriendList() async {
-    friends={};
-    friendsNameStatus=[];
+    friends = {};
+    friendsNameStatus = [];
     DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -129,7 +130,8 @@ class _mainPageState extends State<mainPage> {
       if (value) {
         var friend =
             await FirebaseFirestore.instance.collection('user').doc(key).get();
-        if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid] && friend.get('gonggang')) {
+        if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid] &&
+            friend.get('gonggang')) {
           friendsNameStatus.add({
             'name': friend.get('name'),
             'status': friend.get('status'),
@@ -314,22 +316,22 @@ class _mainPageState extends State<mainPage> {
                   Column(
                     children: [
                       GestureDetector(
-                        onTap: ((){
+                        onTap: (() {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => MyProfilePage()),
+                            MaterialPageRoute(
+                                builder: (context) => MyProfilePage()),
                           );
                         }),
-                        child:
-                          CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 70,
-                            child: Image.network(
-                              // default image
-                              appState.currentuser.imageURL,
-                              width: 200,
-                            ),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 70,
+                          child: Image.network(
+                            // default image
+                            appState.currentuser.imageURL,
+                            width: 200,
                           ),
+                        ),
                       ),
                       SizedBox(height: 4),
                       // 이름
@@ -469,40 +471,43 @@ class _mainPageState extends State<mainPage> {
               ),
               SizedBox(height: 20),
 
-
-
               SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child:Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: ((){
-                    return List.generate(friendsNameStatus.length, (index) {
-                      return Container(
-                        width: 80,
-                        height: 80,
-                        child: Column(children: [
-                          GestureDetector(
-                            onTap: (() {
-                              debugPrint(friendsNameStatus[index]['imageURL']);
-                              debugPrint(friendsNameStatus[index]['name']);
-                              debugPrint(friendsNameStatus[index]['status']);
-                              debugPrint(friendsNameStatus[index]['uid']);
-                            }),
-                            child: CircleAvatar(
-                              radius: 24,
-                              backgroundImage: NetworkImage(friendsNameStatus[index]['imageURL'] as String),
-                            ),
-                          ),
-                          SizedBox(height: 3,),
-                          Text(friendsNameStatus[index]['name'] as String)
-                        ],
-                      )
-                    ); 
-                    });
-                  })()
-                  ,
-                )
-              ),
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: (() {
+                      return List.generate(friendsNameStatus.length, (index) {
+                        return Container(
+                            width: 80,
+                            height: 80,
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: (() {
+                                    debugPrint(
+                                        friendsNameStatus[index]['imageURL']);
+                                    debugPrint(
+                                        friendsNameStatus[index]['name']);
+                                    debugPrint(
+                                        friendsNameStatus[index]['status']);
+                                    debugPrint(friendsNameStatus[index]['uid']);
+                                  }),
+                                  child: CircleAvatar(
+                                    radius: 24,
+                                    backgroundImage: NetworkImage(
+                                        friendsNameStatus[index]['imageURL']
+                                            as String),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(friendsNameStatus[index]['name'] as String)
+                              ],
+                            ));
+                      });
+                    })(),
+                  )),
 
               SizedBox(height: 20),
               Text(
