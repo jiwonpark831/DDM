@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../app_state.dart';
+import '../theme/color.dart';
 
 class RecommendFriendsPage extends StatefulWidget {
   const RecommendFriendsPage({super.key});
@@ -123,7 +124,7 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
                       friendsFriends);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff6AEFC0),
+                  backgroundColor: AppColor.primary,
                   elevation: 0,
                 ),
                 child: Text(

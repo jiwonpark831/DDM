@@ -6,6 +6,8 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import '../theme/color.dart';
+
 class eachChatPage extends StatefulWidget {
   final String chatRoomId;
 
@@ -116,15 +118,15 @@ class _eachChatPageState extends State<eachChatPage> {
             },
             user: types.User(id: userUid),
             theme: DefaultChatTheme(
-              primaryColor: Color(0xff64DCAC),
-              secondaryColor: Color(0xffEEEEEE),
+              primaryColor: AppColor.primary,
+              secondaryColor: AppColor.secondary,
               inputTextColor: Colors.black,
               inputTextStyle: TextStyle(
                 color: Colors.black,
                 fontSize: 16,
               ),
               inputContainerDecoration: BoxDecoration(
-                color: Color(0xffEEEEEE),
+                color: AppColor.secondary,
                 borderRadius: BorderRadius.circular(20),
                 // border: Border.all(
                 //   color: Colors.grey.shade300,

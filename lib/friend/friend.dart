@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../chat/chat.dart';
 import '../chat/eachchat.dart';
-import 'recommend_friends.dart';
+import '../theme/color.dart';
+import 'friendrecommand.dart';
 import 'friendsRequest.dart';
 import '../chat/chat.dart';
 import 'package:provider/provider.dart';
@@ -172,7 +173,7 @@ class friendPageState extends State<friendPage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent,
+                        backgroundColor: AppColor.primary,
                         elevation: 0,
                       ),
                       child: Text(

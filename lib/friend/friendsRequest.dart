@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../app_state.dart';
+import '../theme/color.dart';
 
 class FriendsRequestPage extends StatefulWidget {
   const FriendsRequestPage({super.key});
@@ -119,7 +120,7 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff6AEFC0),
+                      backgroundColor: AppColor.primary,
                       elevation: 0,
                     ),
                     child: Text(
@@ -157,7 +158,7 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffEEEEEE),
+                      backgroundColor: AppColor.secondary,
                       elevation: 0,
                     ),
                     child: Text(
