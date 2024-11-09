@@ -1,12 +1,11 @@
-// friendPage.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'chat.dart';
+import 'chat/chat.dart';
+import 'chat/eachchat.dart';
 import 'recommend_friends.dart';
 import 'friendsRequest.dart';
-import 'chat.dart'; // Import the chat page
+import 'chat/chat.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
 
@@ -28,8 +27,8 @@ class friendPageState extends State<friendPage> {
   }
 
   getfriendList() async {
-    friends={};
-    friendsNameStatus=[];
+    friends = {};
+    friendsNameStatus = [];
     DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -112,7 +111,7 @@ class friendPageState extends State<friendPage> {
                 ).then((_) async {
                   await getfriendList();
                 });
-                setState((){});
+                setState(() {});
               },
               child: Text('+ 추천 친구', style: TextStyle(color: Colors.black)),
             ),
@@ -143,7 +142,8 @@ class friendPageState extends State<friendPage> {
                   return ListTile(
                     leading: CircleAvatar(
                       radius: 24,
-                      backgroundImage: NetworkImage(friendsNameStatus[index]['imageURL'] as String),
+                      backgroundImage: NetworkImage(
+                          friendsNameStatus[index]['imageURL'] as String),
                     ),
                     title: Text(friendsNameStatus[index]['name']!,
                         style: TextStyle(fontWeight: FontWeight.bold)),
