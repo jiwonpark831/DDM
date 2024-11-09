@@ -2,16 +2,16 @@ import 'package:ddm/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../theme/color.dart';
+
 class DDaySettingsPage extends StatefulWidget {
   @override
   _DDaySettingsPageState createState() => _DDaySettingsPageState();
 }
 
 class _DDaySettingsPageState extends State<DDaySettingsPage> {
-  List<dynamic> ddayList = [
-  ];
+  List<dynamic> ddayList = [];
 
-  // 새로운 항목 추가를 위한 함수
   void addNewDDay() {
     setState(() {
       ddayList.add({"title": "", "date": ""});
@@ -23,7 +23,9 @@ class _DDaySettingsPageState extends State<DDaySettingsPage> {
     return Consumer<ApplicationState>(builder: (context, appState, _) {
       ddayList = appState.currentuser.dday;
       return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: Colors.white,
           title: Text("디데이 설정하기"),
           leading: IconButton(
             icon: Icon(Icons.close),
@@ -41,10 +43,9 @@ class _DDaySettingsPageState extends State<DDaySettingsPage> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: DDayItem(
-                        title: ddayList[index]["title"],
-                        date: ddayList[index]["date"],
-                        index: index
-                      ),
+                          title: ddayList[index]["title"],
+                          date: ddayList[index]["date"],
+                          index: index),
                     );
                   },
                 ),
@@ -72,7 +73,7 @@ class _DDayItemState extends State<DDayItem> {
   bool isExpanded = false;
   TextEditingController titleController = TextEditingController();
   TextEditingController dateController = TextEditingController();
-  bool option= true;
+  bool option = true;
 
   @override
   void initState() {
@@ -84,7 +85,7 @@ class _DDayItemState extends State<DDayItem> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(builder: (context, appState, _) {
-      option=appState.currentuser.dday[widget.index]['option'];
+      option = appState.currentuser.dday[widget.index]['option'];
       return Column(
         children: [
           Row(
@@ -100,7 +101,9 @@ class _DDayItemState extends State<DDayItem> {
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.greenAccent),
+                      border: Border.all(
+                        color: AppColor.primary,
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,7 +113,11 @@ class _DDayItemState extends State<DDayItem> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          widget.date.isEmpty ? "날짜 없음" : option ? "~ ${widget.date}" : "${widget.date} ~" ,
+                          widget.date.isEmpty
+                              ? "날짜 없음"
+                              : option
+                                  ? "~ ${widget.date}"
+                                  : "${widget.date} ~",
                           style: TextStyle(color: Colors.grey),
                         ),
                       ],
@@ -126,7 +133,7 @@ class _DDayItemState extends State<DDayItem> {
               child: Container(
                 padding: EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.greenAccent),
+                  border: Border.all(color: AppColor.primary),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Column(
@@ -144,10 +151,10 @@ class _DDayItemState extends State<DDayItem> {
                         Checkbox(
                           value: option,
                           onChanged: (value) {
-                            if (option == !value! && option ==false){
+                            if (option == !value! && option == false) {
                               option = value;
                             }
-                            setState((){});
+                            setState(() {});
                           },
                         ),
                         Text("날짜수"),
@@ -155,10 +162,10 @@ class _DDayItemState extends State<DDayItem> {
                         Checkbox(
                           value: !option,
                           onChanged: (value) {
-                            if (option == value! && option == true){
+                            if (option == value! && option == true) {
                               option = !value;
                             }
-                            setState((){});
+                            setState(() {});
                           },
                         ),
                       ],
@@ -186,32 +193,41 @@ class _DDayItemState extends State<DDayItem> {
                       },
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children:[
-                        ElevatedButton(
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     setState(() {
+                      //       isExpanded = false;
+                      //       appState.changeDDay('','',true,widget.index);
+                      //       titleController.text='';
+                      //       dateController.text='';
+                      //     });
+                      //   },
+                      //   style: ElevatedButton.styleFrom(foregroundColor: Colors.greenAccent),
+                      //   child: Text("초기화"),
+                      // ),
+                      // SizedBox(width:20),
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10)),
+                        width: 350,
+                        height: 50,
+                        child: ElevatedButton(
                           onPressed: () {
                             setState(() {
                               isExpanded = false;
-                              appState.changeDDay('','',true,widget.index);
-                              titleController.text='';
-                              dateController.text='';
+                              appState.changeDDay(titleController.text,
+                                  dateController.text, option, widget.index);
                             });
                           },
-                          style: ElevatedButton.styleFrom(foregroundColor: Colors.greenAccent),
-                          child: Text("초기화"),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor.primary, elevation: 0),
+                          child: Text(
+                            "저장하기",
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
-                        SizedBox(width:20),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              isExpanded = false;
-                              appState.changeDDay(titleController.text,dateController.text,option,widget.index);
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(foregroundColor: Colors.greenAccent),
-                          child: Text("저장하기"),
-                        ),
+                      ),
                     ])
                   ],
                 ),

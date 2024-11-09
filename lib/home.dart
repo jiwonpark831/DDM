@@ -8,13 +8,13 @@ import 'chat/chat.dart';
 import 'friend/friend.dart';
 import 'map.dart';
 
-import 'setting.dart';
-import 'notification.dart';
+import 'home/setting.dart';
+import 'home/notification.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
-import 'dday_edit.dart';
+import 'home/dday_edit.dart';
 
-import 'profile.dart';
+import 'home/profile.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -147,8 +147,7 @@ class _mainPageState extends State<mainPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(builder: (context, appState, _) {
-      String selectedStatus =
-          appState.currentuser!.tag_index; // Default dropdown value
+      String selectedStatus = appState.currentuser!.tag_index;
       return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -158,22 +157,20 @@ class _mainPageState extends State<mainPage> {
             'assets/ddm_image.png', // Replace with your actual asset path
             width: 100,
           ),
-          centerTitle: true,
+          centerTitle: false,
           actions: [
-            IconButton(
-              icon: Icon(Icons.notifications, color: Colors.black),
-              onPressed: () {
-                // Settings button action
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NotificationPage()),
-                );
-              },
-            ),
+            // IconButton(
+            //   icon: Icon(Icons.notifications, color: Colors.black),
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => NotificationPage()),
+            //     );
+            //   },
+            // ),
             IconButton(
               icon: Icon(Icons.settings, color: Colors.black),
               onPressed: () {
-                // Settings button action
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -181,7 +178,7 @@ class _mainPageState extends State<mainPage> {
               },
             ),
           ],
-          leading: SizedBox(), // Placeholder to center the title
+          leading: SizedBox(),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -192,7 +189,6 @@ class _mainPageState extends State<mainPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 종강 카드
                     GestureDetector(
                       onTap: () {
                         // Navigator.push(
@@ -270,7 +266,7 @@ class _mainPageState extends State<mainPage> {
                       child: Container(
                         padding: EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade100,
+                          color: Color(0xffE7FDF5),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(Icons.chevron_right),
@@ -312,7 +308,6 @@ class _mainPageState extends State<mainPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // 프로필 이미지
                   Column(
                     children: [
                       GestureDetector(
@@ -327,14 +322,12 @@ class _mainPageState extends State<mainPage> {
                           backgroundColor: Colors.white,
                           radius: 70,
                           child: Image.network(
-                            // default image
                             appState.currentuser.imageURL,
                             width: 200,
                           ),
                         ),
                       ),
                       SizedBox(height: 4),
-                      // 이름
                       Text(
                         appState.currentuser.name,
                         style: TextStyle(
@@ -345,20 +338,17 @@ class _mainPageState extends State<mainPage> {
                       SizedBox(height: 4),
                     ],
                   ),
-                  SizedBox(width: 20), // 이미지와 텍스트 간 간격
-                  // 이름과 상태 메시지를 세로로 정렬
+                  SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 상태 메시지
-
                       Container(
                           padding:
                               EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                           decoration: BoxDecoration(
-                            color: Colors.green[50], // 말풍선 배경색
+                            color: Color(0xffE7FDF5),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.green.shade200),
+                            border: Border.all(color: Color(0xff69BFA1)),
                           ),
                           child: Row(children: [
                             Text(
@@ -366,7 +356,10 @@ class _mainPageState extends State<mainPage> {
                               style: TextStyle(fontSize: 15),
                             ),
                             TextButton(
-                                child: Text('편집'),
+                                child: Text(
+                                  '편집',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                                 onPressed: (() {
                                   TextEditingController _controller =
                                       TextEditingController(
@@ -375,12 +368,12 @@ class _mainPageState extends State<mainPage> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: Text("Edit Status Message"),
+                                        backgroundColor: Colors.white,
+                                        title: Text("상태 메세지 수정"),
                                         content: TextField(
                                           controller: _controller,
                                           decoration: InputDecoration(
-                                            hintText:
-                                                "Enter your status message",
+                                            hintText: "상태 메세지를 입력해주세요",
                                           ),
                                         ),
                                         actions: [
@@ -388,18 +381,25 @@ class _mainPageState extends State<mainPage> {
                                             onPressed: () {
                                               Navigator.of(context).pop();
                                             },
-                                            child: Text("Cancel"),
+                                            child: Text(
+                                              "닫기",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
                                           ),
                                           TextButton(
                                             onPressed: () {
                                               setState(() {
                                                 appState.changeStatus(
-                                                    _controller
-                                                        .text); // 상태 메시지 업데이트
+                                                    _controller.text);
                                               });
                                               Navigator.of(context).pop();
                                             },
-                                            child: Text("Save"),
+                                            child: Text(
+                                              "저장",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
                                           ),
                                         ],
                                       );
@@ -407,7 +407,6 @@ class _mainPageState extends State<mainPage> {
                                   );
                                 }))
                           ])),
-
                       SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -466,8 +465,8 @@ class _mainPageState extends State<mainPage> {
               SizedBox(height: 20),
               SizedBox(height: 20),
               Text(
-                '현재 친구의 공강 상태를 확인하세요!',
-                style: TextStyle(fontSize: 16),
+                '👤 현재 친구의 공강 상태를 확인하세요!',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
 
@@ -511,8 +510,8 @@ class _mainPageState extends State<mainPage> {
 
               SizedBox(height: 20),
               Text(
-                '내 친구들이 모인 게시판을 확인하세요!',
-                style: TextStyle(fontSize: 16),
+                '👥 내 친구들이 모인 게시판을 확인하세요!',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Row(
