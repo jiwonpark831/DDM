@@ -25,31 +25,35 @@ class _mapPageState extends State<mapPage> {
     mapController = controller;
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getFriendMarker();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    getFriendMarker();
+  }
 
-  // getFriendMarker() async {
-  //   _markers.clear();
-  //   DocumentSnapshot doc = await _firestore
-  //       .collection('user')
-  //       .doc(FirebaseAuth.instance.currentUser!.uid)
-  //       .get();
-  //   if (doc.data() != null && doc.get('friendsList') != null) {
-  //     friends = List<String>.from(doc.get('friendsList'));
-  //   }
-  //   var _request = await http.get(Uri.parse(doc['imageURL']));
+  getFriendMarker() async {
+    _markers.clear();
+    DocumentSnapshot doc = await _firestore
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    // if (doc.data() != null && doc.get('friendsList') != null) {
+    //   friends = List<String>.from(doc.get('friendsList'));
+    // }
+    var _request = await http.get(Uri.parse(doc['imageURL']));
     
-  //   var _bytes = _request.bodyBytes;
+    var _bytes = _request.bodyBytes;
 
-  //   _markers[FirebaseAuth.instance.currentUser!.uid]=Marker(
-  //     markerId:MarkerId(doc.get('uid')),
-  //     position:LatLng(doc.get('location')[0],doc.get('location')[1]),
-  //     icon: BitmapDescriptor.bytes(_bytes.buffer.asUint8List(),imagePixelRatio: 10),
-  //     infoWindow: InfoWindow(title:doc.get('name'))
-  //   );
+    _markers[FirebaseAuth.instance.currentUser!.uid]=Marker(
+      markerId:MarkerId(doc.get('uid')),
+      position:LatLng(doc.get('location')['lat'],doc.get('location')['lng']),
+      icon: BitmapDescriptor.bytes(_bytes.buffer.asUint8List(),imagePixelRatio: 10),
+      infoWindow: InfoWindow(title:doc.get('name')) 
+    );
+    debugPrint('${_markers[FirebaseAuth.instance.currentUser!.uid]}');
+
+    setState((){});
+  }
     
   //   List<Future<void>> friendFetchFutures = friends.map((element) async {
   //     var _friend = await _firestore.collection('user').doc(element).get();
@@ -76,6 +80,7 @@ class _mapPageState extends State<mapPage> {
 
   // }
 
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(

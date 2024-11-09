@@ -42,7 +42,8 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
           friendsNameStatus.add({
             'name': friend.get('name'),
             'status': friend.get('status'),
-            'uid': friend.get('uid')
+            'uid': friend.get('uid'),
+            'imageURL': friend.get('imageURL')
           });
       }
     }
@@ -84,10 +85,11 @@ class FriendsRequestPageState extends State<FriendsRequestPage> {
           itemBuilder: (context, index) {
             return ListTile(
                 leading: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.blue[100],
-                  child: Icon(Icons.person, color: Colors.black),
-                ),
+                radius: 24,
+                backgroundImage: NetworkImage(
+                    friendsNameStatus[index]['imageURL'] as String),
+                    
+              ),
                 title: Text(friendsNameStatus[index]['name']!,
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(friendsNameStatus[index]['status']!),

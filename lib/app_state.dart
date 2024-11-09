@@ -20,6 +20,7 @@ import 'user.dart';
 class ApplicationState extends ChangeNotifier {
   ApplicationState() {
     init();
+    // getGonggangFriends();
     // initLocation();
     // uploadLocation();
   }
@@ -32,7 +33,7 @@ class ApplicationState extends ChangeNotifier {
 
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
-  List<CurrentUser> gonggangFriends = [];
+  List<dynamic> gonggangFriends = [];
 
   final Location location = new Location();
   LocationData? _locationData;
@@ -306,6 +307,34 @@ class ApplicationState extends ChangeNotifier {
     await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
       'imageURL': imageURL,
     });
+  }
+
+  Future<void> getGonggangFriends() async {
+    var tmp = [];
+    for  (var entry in currentuser!.friendList.entries){
+      String key = entry.key;
+      bool value = entry.value;
+      if (value){
+        var _friendSubscription = FirebaseFirestore.instance
+          .collection('user')
+          .doc(key)
+          .snapshots()
+          .listen((snapshot) {
+            print(snapshot.data()?['name']);
+            print(snapshot.data()?['gonggang']);
+            tmp.add({
+              'name': snapshot.get('name'),
+              'status': snapshot.get('status'),
+              'uid': snapshot.get('uid'),
+              'imageURL': snapshot.get('imageURL')
+            });
+            gonggangFriends = tmp;
+            
+          // }
+          notifyListeners();
+        });
+      }
+    } 
   }
 
 

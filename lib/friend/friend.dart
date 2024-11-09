@@ -9,6 +9,7 @@ import 'friendsRequest.dart';
 import '../chat/chat.dart';
 import 'package:provider/provider.dart';
 import '../app_state.dart';
+import 'friendprofile.dart';
 
 class friendPage extends StatefulWidget {
   const friendPage({super.key});
@@ -150,6 +151,15 @@ class friendPageState extends State<friendPage> {
                 itemCount: friendsNameStatus.length,
                 itemBuilder: (context, index) {
                   return ListTile(
+                    onTap:((){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              FriendProfilePage(frienduid: friendsNameStatus[index]['uid'] as String),
+                        )
+                      );
+                    }),
                     leading: CircleAvatar(
                       radius: 24,
                       backgroundImage: NetworkImage(

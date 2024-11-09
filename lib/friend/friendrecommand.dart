@@ -54,7 +54,7 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
       }
       if (friendCheck) continue;
       recommendedFriends.add(
-          {'name': data['name'], 'status': data['status'], 'uid': data['uid']});
+          {'name': data['name'], 'status': data['status'], 'uid': data['uid'],'imageURL':data['imageURL']});
     }
 
     // List<Future<void>> friendFetchFutures = friends.map((element) async {
@@ -96,8 +96,9 @@ class RecommendFriendsPageState extends State<RecommendFriendsPage> {
             return ListTile(
               leading: CircleAvatar(
                 radius: 24,
-                backgroundColor: Colors.blue[100],
-                child: Icon(Icons.person, color: Colors.black),
+                backgroundImage: NetworkImage(
+                    recommendedFriends[index]['imageURL'] as String),
+                    
               ),
               title: Text(recommendedFriends[index]['name']!,
                   style: TextStyle(fontWeight: FontWeight.bold)),

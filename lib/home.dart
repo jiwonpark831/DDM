@@ -286,8 +286,7 @@ class _mainPageState extends State<mainPage> {
               //   ],
               // ),
 
-              SizedBox(height: 20),
-              SizedBox(height: 10),
+              SizedBox(height: 5),
 
               // Row(children: [
               //   Icon(Icons.people),
@@ -463,70 +462,290 @@ class _mainPageState extends State<mainPage> {
               // ),
 
               SizedBox(height: 20),
-              SizedBox(height: 20),
               Text(
                 '👤 현재 친구의 공강 상태를 확인하세요!',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
-
-              SingleChildScrollView(
+              SizedBox(height: 10),
+              Container(
+                width: 400,
+                height: 120,
+                decoration: BoxDecoration(color: Colors.white),
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: (() {
-                      return List.generate(friendsNameStatus.length, (index) {
-                        return Container(
-                            width: 80,
-                            height: 80,
-                            child: Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: (() {
-                                    debugPrint(
-                                        friendsNameStatus[index]['imageURL']);
-                                    debugPrint(
-                                        friendsNameStatus[index]['name']);
-                                    debugPrint(
-                                        friendsNameStatus[index]['status']);
-                                    debugPrint(friendsNameStatus[index]['uid']);
-                                  }),
-                                  child: CircleAvatar(
-                                    radius: 24,
-                                    backgroundImage: NetworkImage(
-                                        friendsNameStatus[index]['imageURL']
-                                            as String),
+                  itemCount: friendsNameStatus.length,
+                  itemBuilder: (context, index) {
+                    return StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(friendsNameStatus[index]['uid'])
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasData && snapshot.data != null) {
+                          var userData = snapshot.data!;
+                          bool isFriendGonggang = userData['gonggang'];
+                          bool showCard = isFriendGonggang ;
+                          if (showCard) {
+                            return InkWell(
+                                onTap: (() {
+                                  debugPrint('${friendsNameStatus[index]['name']}');
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) =>
+                                  //         FriendProfiles(friendList[index]),
+                                  //   ),
+                                  // );
+                                }),
+                                child: Card(
+                                  elevation: 0,
+                                  child: Container(
+                                    color: Colors.white,
+                                    width: 150,
+                                    padding: EdgeInsets.all(2.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 30,
+                                          backgroundImage:
+                                              NetworkImage(userData['imageURL']),
+                                        ),
+                                        SizedBox(height: 8.0),
+                                        Text(
+                                          userData['name'],
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 3,
-                                ),
-                                Text(friendsNameStatus[index]['name'] as String)
-                              ],
-                            ));
-                      });
-                    })(),
-                  )),
+                                ));
+                          } else {
+                            return Container();
+                          }
+                        } else {
+                          return Text(' ');
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
 
-              SizedBox(height: 20),
+
+
+              // SingleChildScrollView(
+              //     scrollDirection: Axis.horizontal,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       children: (() {
+              //         return List.generate(friendsNameStatus.length, (index) {
+              //           return Container(
+              //               width: 80,
+              //               height: 80,
+              //               child: Column(
+              //                 children: [
+              //                   GestureDetector(
+              //                     onTap: (() {
+              //                       debugPrint(
+              //                           friendsNameStatus[index]['imageURL']);
+              //                       debugPrint(
+              //                           friendsNameStatus[index]['name']);
+              //                       debugPrint(
+              //                           friendsNameStatus[index]['status']);
+              //                       debugPrint(friendsNameStatus[index]['uid']);
+              //                     }),
+              //                     child: CircleAvatar(
+              //                       radius: 24,
+              //                       backgroundImage: NetworkImage(
+              //                           friendsNameStatus[index]['imageURL']
+              //                               as String),
+              //                     ),
+              //                   ),
+              //                   SizedBox(
+              //                     height: 3,
+              //                   ),
+              //                   Text(friendsNameStatus[index]['name'] as String)
+              //                 ],
+              //               ));
+              //         });
+              //       })(),
+              //     )),
+
+              SizedBox(height: 10),
               Text(
                 '👥 내 친구들이 모인 게시판을 확인하세요!',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(4, (index) {
-                  return Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.greenAccent),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  );
-                }),
+              Container(
+                width: 400,
+                height: 200,
+                decoration: BoxDecoration(color: Colors.white),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('board')
+                      .snapshots(), // board 컬렉션의 모든 문서를 실시간으로 수신
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator()); // 로딩 상태
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Center(child: Text('No board items found.'));
+                    }
+
+                    // board 컬렉션의 모든 문서 데이터를 가져옴
+                    final documents = snapshot.data!.docs;
+
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: documents.length,
+                      itemBuilder: (context, index) {
+                        // 각 문서 데이터를 Map 형태로 변환
+                        final data = documents[index].data() as Map<String, dynamic>;
+
+                        final bool isLocalFile = data['imageUrl'] != null &&
+                            !data['imageUrl'].startsWith('http');
+                        final imageProvider = NetworkImage(data['imageUrl']);
+
+                        return GestureDetector(
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            width: 200,
+                            height:200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Color(0xffD9D9D9)),
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8.0),
+                                      topRight: Radius.circular(8.0),
+                                    ),
+                                    image: DecorationImage(
+                                      image: imageProvider as ImageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        data['title'] ?? '',
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      SizedBox(height: 8),
+                                      // Text('주최자: ${meetingData['organizer'] ?? ''}',
+                                      //     overflow: TextOverflow.ellipsis),
+                                      Text('🗓️매주 ${data['date'] ?? ''}',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 10)),
+                                      Text('⏰${data['time'] ?? ''}',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 10)),
+                                      Text('📍${data['location'] ?? ''}',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 10)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
+                
+                
+              //   ListView.builder(
+              //     scrollDirection: Axis.horizontal,
+              //     itemCount: 5,
+              //     itemBuilder: (context, index) {
+              //       return StreamBuilder<QuerySnapshot>(
+              //         stream: FirebaseFirestore.instance
+              //             .collection('board')
+              //             .snapshots(),
+              //         builder: (context, snapshot) {
+              //           if (snapshot.connectionState == ConnectionState.waiting) {
+              //             return CircularProgressIndicator();
+              //           } else if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+              //             var docList = snapshot.data!.docs;
+              //             docList.shuffle();
+              //             docList[index]
+              //             var userData = snapshot.data!;
+              //             bool isFriendGonggang = userData.['gonggang'];
+              //             bool showCard = isFriendGonggang ;
+              //             if (showCard) {
+              //               return InkWell(
+              //                   onTap: (() {
+              //                   }),
+              //                   child: Card(
+              //                     elevation: 0,
+              //                     child: Container(
+              //                       color: Colors.white,
+              //                       width: 150,
+              //                       padding: EdgeInsets.all(2.0),
+              //                       child: Column(
+              //                         mainAxisAlignment: MainAxisAlignment.center,
+              //                         children: [
+              //                           CircleAvatar(
+              //                             radius: 30,
+              //                             backgroundImage:
+              //                                 NetworkImage(userData['imageURL']),
+              //                           ),
+              //                           SizedBox(height: 8.0),
+              //                           Text(
+              //                             userData['name'],
+              //                             style: TextStyle(
+              //                                 fontWeight: FontWeight.bold),
+              //                           ),
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ));
+              //             } else {
+              //               return Container();
+              //             }
+              //           } else {
+              //             return Text(' ');
+              //           }
+              //         },
+              //       );
+              //     },
+              //   ),
+              // ),
+
+
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: List.generate(4, (index) {
+              //     return Container(
+              //       width: 80,
+              //       height: 80,
+              //       decoration: BoxDecoration(
+              //         border: Border.all(color: Colors.greenAccent),
+              //         borderRadius: BorderRadius.circular(10),
+              //       ),
+              //     );
+              //   }),
+              // ),
             ],
           ),
         ),

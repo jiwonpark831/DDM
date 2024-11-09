@@ -15,33 +15,7 @@ class MyProfilePage extends StatefulWidget {
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
-  // 예제 데이터
-
-  // 편집 페이지로 이동
-  // void _goToEditPage() {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => EditProfilePage(
-  //         name: name,
-  //         major: major,
-  //         year: year,
-  //         intro: intro,
-  //         imageUrl: imageUrl,
-  //         onSave: (newName, newMajor, newYear, newIntro, newImageUrl) {
-  //           setState(() {
-  //             name = newName;
-  //             major = newMajor;
-  //             year = newYear;
-  //             intro = newIntro;
-  //             imageUrl = newImageUrl;
-  //           });
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
-
+  
   Widget _TimetablePreview(List<dynamic> schedule) {
     List<Event> eventList = [];
     schedule.forEach((element) {
