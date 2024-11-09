@@ -27,7 +27,22 @@ class _chatPageState extends State<chatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("내 채팅방")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 30),
+              child: Text("채팅"),
+            ),
+            SizedBox(
+              height: 30,
+            )
+          ],
+        ),
+        centerTitle: false,
+      ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('chat')
@@ -68,17 +83,19 @@ class _chatPageState extends State<chatPage> {
                   final otherUserName = otherUserData['name'] ?? 'Unknown';
                   final otherUserImageURL = otherUserData['imageURL'] ?? '';
 
-                  // Format timestamp with timeago if available
                   final timeAgoText = timestamp != null
                       ? timeago.format(timestamp)
                       : 'No timestamp';
 
                   return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: otherUserImageURL.isNotEmpty
-                          ? NetworkImage(otherUserImageURL)
-                          : AssetImage('assets/placeholder.png')
-                              as ImageProvider,
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: CircleAvatar(
+                        backgroundImage: otherUserImageURL.isNotEmpty
+                            ? NetworkImage(otherUserImageURL)
+                            : AssetImage('assets/placeholder.png')
+                                as ImageProvider,
+                      ),
                     ),
                     title: Text(otherUserName),
                     subtitle: Text(lastMessage),
@@ -164,7 +181,9 @@ class _eachChatPageState extends State<eachChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: otherUserData == null
             ? Text("Loading...")
             : Row(
@@ -174,7 +193,7 @@ class _eachChatPageState extends State<eachChatPage> {
                         ? NetworkImage(otherUserData!['imageURL'])
                         : AssetImage('assets/placeholder.png') as ImageProvider,
                   ),
-                  SizedBox(width: 8),
+                  SizedBox(width: 15),
                   Text(otherUserData!['name'] ?? "Unknown"),
                 ],
               ),
@@ -210,6 +229,23 @@ class _eachChatPageState extends State<eachChatPage> {
               await _sendMessage(partialText.text);
             },
             user: types.User(id: userUid),
+            theme: DefaultChatTheme(
+              primaryColor: Color(0xff64DCAC),
+              secondaryColor: Color(0xffEEEEEE),
+              inputTextColor: Colors.black,
+              inputTextStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+              inputContainerDecoration: BoxDecoration(
+                color: Color(0xffEEEEEE),
+                borderRadius: BorderRadius.circular(20),
+                // border: Border.all(
+                //   color: Colors.grey.shade300,
+                //   width: 1.0,
+                // ),
+              ),
+            ),
           );
         },
       ),
