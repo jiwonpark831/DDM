@@ -198,7 +198,7 @@ class MeetingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isLocalFile = meetingData['imageUrl'] != null &&
         !meetingData['imageUrl'].startsWith('http');
-    final imageWidget = isLocalFile
+    final imageProvider = isLocalFile
         ? FileImage(File(meetingData['imageUrl']))
         : NetworkImage(meetingData['imageUrl'] ??
             'https://your-default-image-url.com/default.jpg');
@@ -206,41 +206,48 @@ class MeetingCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 250,
-        height: 250,
-        padding: EdgeInsets.all(16.0),
+        width: 180,
+        height: 200,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Color(0xffD9D9D9)),
+          color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: CircleAvatar(
-                backgroundImage: imageWidget as ImageProvider,
-                radius: 40,
+            Container(
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  topRight: Radius.circular(8.0),
+                ),
+                image: DecorationImage(
+                  image: imageProvider as ImageProvider,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-            SizedBox(height: 8),
-            Text(
-              meetingData['title'] ?? '',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            SizedBox(height: 8),
-            Flexible(
+            Padding(
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('주최자: ${meetingData['organizer'] ?? ''}',
+                  Text(
+                    meetingData['title'] ?? '',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  SizedBox(height: 8),
+                  // Text('주최자: ${meetingData['organizer'] ?? ''}',
+                  //     overflow: TextOverflow.ellipsis),
+                  Text('🗓️${meetingData['date'] ?? ''}',
                       overflow: TextOverflow.ellipsis),
-                  Text('날짜: ${meetingData['date'] ?? ''}',
+                  Text('⏰${meetingData['time'] ?? ''}',
                       overflow: TextOverflow.ellipsis),
-                  Text('시간: ${meetingData['time'] ?? ''}',
-                      overflow: TextOverflow.ellipsis),
-                  Text('장소: ${meetingData['location'] ?? ''}',
+                  Text('📍${meetingData['location'] ?? ''}',
                       overflow: TextOverflow.ellipsis),
                 ],
               ),

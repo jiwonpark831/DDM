@@ -49,8 +49,9 @@ class _boardPageState extends State<boardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.fromLTRB(16, 100, 0, 16),
+        padding: EdgeInsets.fromLTRB(16, 70, 0, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -81,36 +82,50 @@ class _boardPageState extends State<boardPage> {
                 },
               ),
             ),
-            SizedBox(height: 32),
+            SizedBox(height: 60),
             Text('모임 게시판',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-            ListTile(
-              title: Text('단기모임'),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MeetingListPage(
-                          meetings: shortMeetings, title: '단기모임')),
-                );
-              },
+            Container(
+              width: 400,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey,
+                  ),
+                  borderRadius: BorderRadius.circular(30)),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('단기모임'),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MeetingListPage(
+                                meetings: shortMeetings, title: '단기모임')),
+                      );
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('장기모임'),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MeetingListPage(
+                                meetings: longMeetings, title: '장기모임')),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-            Divider(),
-            ListTile(
-              title: Text('장기모임'),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MeetingListPage(
-                          meetings: longMeetings, title: '장기모임')),
-                );
-              },
+            SizedBox(
+              height: 50,
             ),
-            Divider(),
             Center(
               child: TextButton(
                 onPressed: () {
@@ -120,7 +135,8 @@ class _boardPageState extends State<boardPage> {
                         builder: (context) => CreateMeetingPage()),
                   );
                 },
-                child: Text('+ 모임 만들기', style: TextStyle(fontSize: 16)),
+                child: Text('+ 모임 만들기',
+                    style: TextStyle(fontSize: 16, color: Colors.grey)),
               ),
             ),
           ],

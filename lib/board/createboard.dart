@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../theme/color.dart';
+
 class CreateMeetingPage extends StatefulWidget {
   @override
   _CreateMeetingPageState createState() => _CreateMeetingPageState();
@@ -18,39 +20,73 @@ class _CreateMeetingPageState extends State<CreateMeetingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          Text("어떤 모임을 만들까요?"),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _type = '단기';
-              });
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EnterMeetingDetailsPage(type: _type),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Text(
+              "어떤 모임을 만들까요?",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(
+              height: 25,
+            ),
+            Container(
+              width: 360,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _type = '단기';
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EnterMeetingDetailsPage(type: _type),
+                    ),
+                  );
+                },
+                child: Text(
+                  "단기모임",
+                  style: TextStyle(color: Colors.black),
                 ),
-              );
-            },
-            child: Text("단기모임"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _type = '장기';
-              });
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EnterMeetingDetailsPage(type: _type),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.primary, elevation: 0),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: 360,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _type = '장기';
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EnterMeetingDetailsPage(type: _type),
+                    ),
+                  );
+                },
+                child: Text(
+                  "장기모임",
+                  style: TextStyle(color: Colors.black),
                 ),
-              );
-            },
-            child: Text("장기모임"),
-          ),
-        ],
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.secondary, elevation: 0),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -89,10 +125,8 @@ class _EnterMeetingDetailsPageState extends State<EnterMeetingDetailsPage> {
           'meeting_images/${DateTime.now().millisecondsSinceEpoch}';
       final ref = FirebaseStorage.instance.ref().child(fileName);
 
-      // Firebase Storage에 이미지 업로드
       await ref.putFile(_selectedImage!);
 
-      // 업로드가 완료된 후 다운로드 URL 가져오기
       String downloadUrl = await ref.getDownloadURL();
       setState(() {
         _imageUrl = downloadUrl;
@@ -105,20 +139,30 @@ class _EnterMeetingDetailsPageState extends State<EnterMeetingDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("모임 정보 입력")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Text(
+              "모임을 나타내는 이미지를 넣어주세요",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(
+              height: 30,
+            ),
             Center(
               child: GestureDetector(
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: _selectedImage != null
-                      ? FileImage(_selectedImage!) // 선택된 이미지 표시
+                      ? FileImage(_selectedImage!)
                       : (_imageUrl.isNotEmpty
-                              ? NetworkImage(_imageUrl) // 업로드된 이미지 URL 표시
+                              ? NetworkImage(_imageUrl)
                               : NetworkImage(
                                   'https://your-default-image-url.com/default.jpg'))
                           as ImageProvider,
@@ -128,25 +172,44 @@ class _EnterMeetingDetailsPageState extends State<EnterMeetingDetailsPage> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 50,
+            ),
+            Text(
+              "모임 이름을 적어주세요",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+            ),
+            SizedBox(
+              height: 30,
+            ),
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: '모임 이름'),
+              decoration: InputDecoration(labelText: '모임 이름 입력'),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SetMeetingDatePage(
-                      type: widget.type,
-                      title: _titleController.text,
-                      imageUrl: _imageUrl.isNotEmpty ? _imageUrl : '',
+            SizedBox(height: 350),
+            Container(
+              width: 350,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SetMeetingDatePage(
+                        type: widget.type,
+                        title: _titleController.text,
+                        imageUrl: _imageUrl.isNotEmpty ? _imageUrl : '',
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Text("다음"),
+                  );
+                },
+                child: Text(
+                  "다음",
+                  style: TextStyle(color: Colors.black),
+                ),
+                style: ElevatedButton.styleFrom(
+                    elevation: 0, backgroundColor: AppColor.primary),
+              ),
             ),
           ],
         ),
@@ -217,9 +280,14 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("날짜 선택", style: TextStyle(fontSize: 16)),
-          SizedBox(height: 8),
+          // Text("날짜 선택", style: TextStyle(fontSize: 16)),
+          SizedBox(height: 15),
           TableCalendar(
+            calendarStyle: CalendarStyle(
+                todayDecoration: BoxDecoration(
+              color: AppColor.secondary,
+              shape: BoxShape.circle,
+            )),
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2100, 12, 31),
             focusedDay: _selectedDate,
@@ -229,6 +297,26 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
                 _selectedDate = selectedDay;
               });
             },
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+            ),
+            calendarBuilders: CalendarBuilders(
+              selectedBuilder: (context, date, events) {
+                return Container(
+                  margin: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    color: AppColor.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${date.day}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       );
@@ -242,6 +330,8 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
             spacing: 8.0,
             children: ['월', '화', '수', '목', '금', '토', '일'].map((day) {
               return ChoiceChip(
+                backgroundColor: Colors.white,
+                selectedColor: AppColor.primary,
                 label: Text(day),
                 selected: _selectedDays.contains(day),
                 onSelected: (isSelected) {
@@ -263,8 +353,8 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("시간 선택", style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
+        // Text("시간 선택", style: TextStyle(fontSize: 16)),
+        SizedBox(height: 15),
         Row(
           children: [
             DropdownButton<int>(
@@ -311,25 +401,46 @@ class _SetMeetingDatePageState extends State<SetMeetingDatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("모임 날짜와 시간 설정")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("주최자: $_organizerName"),
+            Text(
+              "언제 어디서 만날까요?",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            // Text("주최자: $_organizerName"),
             TextField(
               controller: _locationController,
-              decoration: InputDecoration(labelText: '장소'),
+              decoration: InputDecoration(labelText: '장소를 입력해주세요'),
             ),
             SizedBox(height: 16),
             _buildDateOrDaysSelector(),
             SizedBox(height: 16),
             _buildTimeSelector(),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: createMeeting,
-              child: Text("모임 만들기"),
+            SizedBox(height: 50),
+            Center(
+              child: Container(
+                width: 350,
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: createMeeting,
+                  child: Text(
+                    "만들기",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      elevation: 0, backgroundColor: AppColor.primary),
+                ),
+              ),
             ),
           ],
         ),
