@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -69,15 +70,35 @@ class _EnterMeetingDetailsPageState extends State<EnterMeetingDetailsPage> {
   final TextEditingController _titleController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
-  String _defaultImageUrl = 'https://your-default-image-url.com/default.jpg';
+  String _imageUrl = '';
 
   Future<void> _pickImage() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      _selectedImage = File(pickedFile.path);
+      await _uploadImageToStorage(); // 이미지를 선택한 후에 업로드 및 URL 업데이트
+    }
+  }
+
+  Future<void> _uploadImageToStorage() async {
+    if (_selectedImage == null) return;
+
+    try {
+      final fileName =
+          'meeting_images/${DateTime.now().millisecondsSinceEpoch}';
+      final ref = FirebaseStorage.instance.ref().child(fileName);
+
+      // Firebase Storage에 이미지 업로드
+      await ref.putFile(_selectedImage!);
+
+      // 업로드가 완료된 후 다운로드 URL 가져오기
+      String downloadUrl = await ref.getDownloadURL();
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _imageUrl = downloadUrl;
       });
+    } catch (e) {
+      print("Error uploading image to Firebase Storage: $e");
     }
   }
 
@@ -95,9 +116,13 @@ class _EnterMeetingDetailsPageState extends State<EnterMeetingDetailsPage> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: _selectedImage != null
-                      ? FileImage(_selectedImage!)
-                      : NetworkImage(_defaultImageUrl) as ImageProvider,
-                  child: _selectedImage == null
+                      ? FileImage(_selectedImage!) // 선택된 이미지 표시
+                      : (_imageUrl.isNotEmpty
+                              ? NetworkImage(_imageUrl) // 업로드된 이미지 URL 표시
+                              : NetworkImage(
+                                  'https://your-default-image-url.com/default.jpg'))
+                          as ImageProvider,
+                  child: _selectedImage == null && _imageUrl.isEmpty
                       ? Icon(Icons.camera_alt, size: 50, color: Colors.white)
                       : null,
                 ),
@@ -116,7 +141,7 @@ class _EnterMeetingDetailsPageState extends State<EnterMeetingDetailsPage> {
                     builder: (context) => SetMeetingDatePage(
                       type: widget.type,
                       title: _titleController.text,
-                      imageUrl: _selectedImage?.path ?? _defaultImageUrl,
+                      imageUrl: _imageUrl.isNotEmpty ? _imageUrl : '',
                     ),
                   ),
                 );

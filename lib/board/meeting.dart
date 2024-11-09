@@ -146,13 +146,14 @@ class MeetingListPage extends StatelessWidget {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: meeting['imageUrl'] != null
-                          ? (meeting['imageUrl'].startsWith('http')
-                                  ? NetworkImage(meeting['imageUrl'])
-                                  : FileImage(File(meeting['imageUrl'])))
-                              as ImageProvider
-                          : NetworkImage(
-                              'https://your-default-image-url.com/default.jpg'),
+                      backgroundImage: meeting['imageUrl'] != null &&
+                              meeting['imageUrl'].startsWith('http')
+                          ? NetworkImage(meeting['imageUrl'])
+                          : (meeting['imageUrl'] != null
+                                  ? FileImage(File(meeting['imageUrl']))
+                                  : NetworkImage(
+                                      'https://your-default-image-url.com/default.jpg'))
+                              as ImageProvider,
                       radius: 30,
                     ),
                     SizedBox(width: 16),
@@ -195,8 +196,8 @@ class MeetingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isLocalFile = meetingData['imageUrl'] != null &&
-        File(meetingData['imageUrl']).existsSync();
+    final bool isLocalFile = meetingData['imageUrl'] != null &&
+        !meetingData['imageUrl'].startsWith('http');
     final imageWidget = isLocalFile
         ? FileImage(File(meetingData['imageUrl']))
         : NetworkImage(meetingData['imageUrl'] ??
