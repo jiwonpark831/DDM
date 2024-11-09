@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../theme/color.dart';
+
 class SharedCalendarPage extends StatefulWidget {
   final String meetingId;
 
@@ -37,20 +39,26 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("일정 목록"),
+          backgroundColor: Colors.white,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: events.map((event) {
               return ListTile(
-                title: Text(event['title']),
-                subtitle: Text("날짜: ${event['date']}"),
+                title: Text("${event['date']}"),
+                subtitle: Text(
+                  event['title'],
+                  style: TextStyle(fontSize: 25),
+                ),
               );
             }).toList(),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("닫기"),
+              child: Text(
+                "닫기",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           ],
         );
@@ -61,11 +69,18 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           TableCalendar(
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2100, 12, 31),
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: AppColor.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             onDaySelected: (selectedDay, focusedDay) {
@@ -88,11 +103,40 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
                       event['date'] == day.toIso8601String().split('T').first)
                   .toList();
             },
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+            ),
+            calendarBuilders: CalendarBuilders(
+              selectedBuilder: (context, date, events) {
+                return Container(
+                  margin: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    color: AppColor.secondary,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${date.day}',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                );
+              },
+            ),
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _showAddEventDialog,
-            child: Text("일정 추가"),
+          SizedBox(height: 150),
+          Container(
+            width: 350,
+            height: 60,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primary, elevation: 0),
+              onPressed: _showAddEventDialog,
+              child: Text(
+                "일정 추가",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
           ),
         ],
       ),
@@ -107,13 +151,14 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("일정 추가"),
+          backgroundColor: Colors.white,
+          title: Text("일정 추가하기"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: "일정 제목"),
+                decoration: InputDecoration(labelText: "일정을 입력하세요"),
               ),
               SizedBox(height: 20),
               Row(
@@ -143,7 +188,10 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("취소"),
+              child: Text(
+                "취소",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -152,7 +200,7 @@ class _SharedCalendarPageState extends State<SharedCalendarPage> {
                   Navigator.pop(context);
                 }
               },
-              child: Text("추가"),
+              child: Text("추가", style: TextStyle(color: Colors.black)),
             ),
           ],
         );
@@ -220,7 +268,8 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("새 게시물 작성"),
+          backgroundColor: Colors.white,
+          title: Text("게시물 작성"),
           content: TextField(
             controller: _postController,
             decoration: InputDecoration(labelText: "내용을 입력하세요"),
@@ -229,7 +278,10 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("취소"),
+              child: Text(
+                "취소",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -238,7 +290,10 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
                   Navigator.pop(context);
                 }
               },
-              child: Text("작성"),
+              child: Text(
+                "작성",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           ],
         );
@@ -249,6 +304,7 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(
@@ -256,31 +312,40 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
               itemCount: _posts.length,
               itemBuilder: (context, index) {
                 var post = _posts[index];
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          post['author'] ?? 'Anonymous',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
-                          ),
+                return Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColor.secondary)),
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              post['author'] ?? 'Anonymous',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(post['content']),
+                            SizedBox(height: 5),
+                            Text(
+                              post['timestamp'].toDate().toString(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 5),
-                        Text(post['content']),
-                        SizedBox(height: 5),
-                        Text(
-                          post['timestamp'].toDate().toString(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 );
@@ -290,8 +355,13 @@ class _SharedBoardPageState extends State<SharedBoardPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor.primary,
+        elevation: 0,
         onPressed: _showAddPostDialog,
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         tooltip: '새 게시물 작성',
       ),
     );
@@ -342,14 +412,31 @@ class _SharedBoardPage2State extends State<SharedBoardPage2> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Divider(),
         Expanded(
           child: ListView.builder(
             itemCount: _posts.length,
             itemBuilder: (context, index) {
               var post = _posts[index];
-              return ListTile(
-                title: Text(post['content']),
-                subtitle: Text(post['timestamp'].toDate().toString()),
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  color: AppColor.secondary,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        post['author'] ?? 'Anonymous',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      Text(post['content']),
+                      Text(post['timestamp'].toDate().toString()),
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -359,7 +446,7 @@ class _SharedBoardPage2State extends State<SharedBoardPage2> {
           child: TextField(
             controller: _postController,
             decoration: InputDecoration(
-              labelText: '새 게시물 작성',
+              labelText: '메세지를 입력하세요',
               suffixIcon: IconButton(
                 icon: Icon(Icons.send),
                 onPressed: () => addPost(_postController.text),

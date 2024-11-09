@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
+import '../theme/color.dart';
 import 'shared.dart';
 
 class MeetingDetailPage extends StatefulWidget {
@@ -62,30 +63,53 @@ class _MeetingDetailPageState extends State<MeetingDetailPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.meetingData['title'])),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: false,
+        title: Text(widget.meetingData['title']),
+        backgroundColor: Colors.white,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor:
+                      isJoined ? AppColor.secondary : AppColor.primary),
+              onPressed: isJoined ? null : joinMeeting,
+              child: Text(
+                isJoined ? '참여 완료' : '참여하기',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('주최자: ${widget.meetingData['organizer']}'),
-            Text('날짜: ${widget.meetingData['date']}'),
-            Text('시간: ${widget.meetingData['time']}'),
-            Text('장소: ${widget.meetingData['location']}'),
+            // Text('${widget.meetingData['organizer']}'),
+            Text('🗓️매주 ${widget.meetingData['date']}'),
+            Text('⏰${widget.meetingData['time']}'),
+            Text('📍${widget.meetingData['location']}'),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isJoined ? null : joinMeeting,
-              child: Text(isJoined ? '참여 완료' : '참여하기'),
-            ),
+            // ElevatedButton(
+            //   onPressed: isJoined ? null : joinMeeting,
+            //   child: Text(isJoined ? '참여 완료' : '참여하기'),
+            // ),
             if (isJoined) ...[
               SizedBox(height: 20),
               if (widget.meetingData['type'] == '장기' && _tabController != null)
                 TabBar(
                   controller: _tabController,
                   tabs: [
-                    Tab(text: '공유 캘린더'),
+                    Tab(text: '일정'),
                     Tab(text: '게시판'),
                   ],
+                  labelStyle: TextStyle(color: Colors.black),
+                  indicatorColor: AppColor.primary,
                 ),
               Expanded(
                 child: widget.meetingData['type'] == '장기' &&
@@ -117,7 +141,9 @@ class MeetingListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text(title),
       ),
       body: ListView.builder(
@@ -125,59 +151,70 @@ class MeetingListPage extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         itemBuilder: (context, index) {
           var meeting = meetings[index];
-          return Card(
-            margin: EdgeInsets.only(bottom: 16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
+          return Container(
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: AppColor.secondary,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(12),
             ),
-            elevation: 3,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        MeetingDetailPage(meetingData: meeting),
-                  ),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: meeting['imageUrl'] != null &&
-                              meeting['imageUrl'].startsWith('http')
-                          ? NetworkImage(meeting['imageUrl'])
-                          : (meeting['imageUrl'] != null
-                                  ? FileImage(File(meeting['imageUrl']))
-                                  : NetworkImage(
-                                      'https://your-default-image-url.com/default.jpg'))
-                              as ImageProvider,
-                      radius: 30,
+            child: Card(
+              margin: EdgeInsets.only(bottom: 16),
+              // shape: RoundedRectangleBorder(
+              //   borderRadius: BorderRadius.circular(12.0),
+              // ),
+              elevation: 0,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MeetingDetailPage(meetingData: meeting),
                     ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            meeting['title'],
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text('주최자: ${meeting['organizer']}'),
-                          Text('날짜: ${meeting['date']}'),
-                          Text('시간: ${meeting['time']}'),
-                          Text('장소: ${meeting['location']}'),
-                        ],
+                  );
+                },
+                child: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: meeting['imageUrl'] != null &&
+                                meeting['imageUrl'].startsWith('http')
+                            ? NetworkImage(meeting['imageUrl'])
+                            : (meeting['imageUrl'] != null
+                                    ? FileImage(File(meeting['imageUrl']))
+                                    : NetworkImage(
+                                        'https://your-default-image-url.com/default.jpg'))
+                                as ImageProvider,
+                        radius: 40,
                       ),
-                    ),
-                    Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                  ],
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              meeting['title'],
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text('${meeting['organizer']}'),
+                            Text('🗓️매주 ${meeting['date']}'),
+                            Text('⏰${meeting['time']}'),
+                            Text('📍${meeting['location']}'),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -243,7 +280,7 @@ class MeetingCard extends StatelessWidget {
                   SizedBox(height: 8),
                   // Text('주최자: ${meetingData['organizer'] ?? ''}',
                   //     overflow: TextOverflow.ellipsis),
-                  Text('🗓️${meetingData['date'] ?? ''}',
+                  Text('🗓️매주 ${meetingData['date'] ?? ''}',
                       overflow: TextOverflow.ellipsis),
                   Text('⏰${meetingData['time'] ?? ''}',
                       overflow: TextOverflow.ellipsis),
