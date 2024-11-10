@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'chat/chat.dart';
 import 'friend/friend.dart';
+import 'friend/friendprofile.dart';
 import 'map.dart';
 
 import 'home/setting.dart';
@@ -481,48 +482,51 @@ class _mainPageState extends State<mainPage> {
                           .doc(friendsNameStatus[index]['uid'])
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return CircularProgressIndicator();
                         } else if (snapshot.hasData && snapshot.data != null) {
                           var userData = snapshot.data!;
                           bool isFriendGonggang = userData['gonggang'];
-                          bool showCard = isFriendGonggang ;
+                          bool showCard = isFriendGonggang;
                           if (showCard) {
                             return InkWell(
-                                onTap: (() {
-                                  debugPrint('${friendsNameStatus[index]['name']}');
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         FriendProfiles(friendList[index]),
-                                  //   ),
-                                  // );
-                                }),
-                                child: Card(
-                                  elevation: 0,
-                                  child: Container(
-                                    color: Colors.white,
-                                    width: 150,
-                                    padding: EdgeInsets.all(2.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 30,
-                                          backgroundImage:
-                                              NetworkImage(userData['imageURL']),
-                                        ),
-                                        SizedBox(height: 8.0),
-                                        Text(
-                                          userData['name'],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FriendProfilePage(
+                                      frienduid: friendsNameStatus[index]
+                                          ['uid']!,
                                     ),
                                   ),
-                                ));
+                                );
+                              },
+                              child: Card(
+                                elevation: 0,
+                                child: Container(
+                                  color: Colors.white,
+                                  width: 150,
+                                  padding: EdgeInsets.all(2.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage:
+                                            NetworkImage(userData['imageURL']),
+                                      ),
+                                      SizedBox(height: 8.0),
+                                      Text(
+                                        userData['name'],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
                           } else {
                             return Container();
                           }
@@ -534,8 +538,6 @@ class _mainPageState extends State<mainPage> {
                   },
                 ),
               ),
-
-
 
               // SingleChildScrollView(
               //     scrollDirection: Axis.horizontal,
@@ -591,7 +593,8 @@ class _mainPageState extends State<mainPage> {
                       .snapshots(), // board 컬렉션의 모든 문서를 실시간으로 수신
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator()); // 로딩 상태
+                      return Center(
+                          child: CircularProgressIndicator()); // 로딩 상태
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return Center(child: Text('No board items found.'));
@@ -605,7 +608,8 @@ class _mainPageState extends State<mainPage> {
                       itemCount: documents.length,
                       itemBuilder: (context, index) {
                         // 각 문서 데이터를 Map 형태로 변환
-                        final data = documents[index].data() as Map<String, dynamic>;
+                        final data =
+                            documents[index].data() as Map<String, dynamic>;
 
                         final bool isLocalFile = data['imageUrl'] != null &&
                             !data['imageUrl'].startsWith('http');
@@ -615,7 +619,7 @@ class _mainPageState extends State<mainPage> {
                           child: Container(
                             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                             width: 200,
-                            height:200,
+                            height: 200,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: Color(0xffD9D9D9)),
@@ -640,11 +644,14 @@ class _mainPageState extends State<mainPage> {
                                 Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         data['title'] ?? '',
-                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
                                       ),
@@ -672,8 +679,7 @@ class _mainPageState extends State<mainPage> {
                   },
                 ),
               ),
-                
-                
+
               //   ListView.builder(
               //     scrollDirection: Axis.horizontal,
               //     itemCount: 5,
@@ -731,7 +737,6 @@ class _mainPageState extends State<mainPage> {
               //     },
               //   ),
               // ),
-
 
               // Row(
               //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
