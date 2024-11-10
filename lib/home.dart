@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'board/meeting.dart';
 import 'chat/chat.dart';
 import 'friend/friend.dart';
 import 'friend/friendprofile.dart';
@@ -591,32 +592,36 @@ class _mainPageState extends State<mainPage> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('board')
-                      .snapshots(), // board 컬렉션의 모든 문서를 실시간으로 수신
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                          child: CircularProgressIndicator()); // 로딩 상태
+                      return Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return Center(child: Text('No board items found.'));
                     }
-
-                    // board 컬렉션의 모든 문서 데이터를 가져옴
                     final documents = snapshot.data!.docs;
 
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: documents.length,
                       itemBuilder: (context, index) {
-                        // 각 문서 데이터를 Map 형태로 변환
                         final data =
                             documents[index].data() as Map<String, dynamic>;
 
-                        final bool isLocalFile = data['imageUrl'] != null &&
-                            !data['imageUrl'].startsWith('http');
                         final imageProvider = NetworkImage(data['imageUrl']);
 
                         return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MeetingDetailPage(
+                                  meetingData: data,
+                                ),
+                              ),
+                            );
+                          },
                           child: Container(
                             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                             width: 200,
@@ -637,7 +642,7 @@ class _mainPageState extends State<mainPage> {
                                       topRight: Radius.circular(8.0),
                                     ),
                                     image: DecorationImage(
-                                      image: imageProvider as ImageProvider,
+                                      image: imageProvider,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -657,8 +662,6 @@ class _mainPageState extends State<mainPage> {
                                         maxLines: 1,
                                       ),
                                       SizedBox(height: 8),
-                                      // Text('주최자: ${meetingData['organizer'] ?? ''}',
-                                      //     overflow: TextOverflow.ellipsis),
                                       Text('🗓️매주 ${data['date'] ?? ''}',
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(fontSize: 10)),
