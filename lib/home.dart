@@ -371,6 +371,7 @@ class _mainPageState extends State<mainPage> {
                                         backgroundColor: Colors.white,
                                         title: Text("상태 메세지 수정"),
                                         content: TextField(
+                                          maxLength: 10,
                                           controller: _controller,
                                           decoration: InputDecoration(
                                             hintText: "상태 메세지를 입력해주세요",
