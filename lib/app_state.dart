@@ -21,8 +21,8 @@ class ApplicationState extends ChangeNotifier {
   ApplicationState() {
     init();
     // getGonggangFriends();
-    // initLocation();
-    // uploadLocation();
+    initLocation();
+    uploadLocation();
   }
   Reference get firebasestorage => FirebaseStorage.instance.ref();
 
@@ -60,41 +60,41 @@ class ApplicationState extends ChangeNotifier {
   // List<Product> wishlist = [];
   List<String> wishlistcheck=[];
   
-  // uploadLocation() {
-  // Timer.periodic(Duration(seconds:10),(timer) async {
-  //   if (_locationData != null){
-  //     debugPrint('${_locationData!.latitude} / ${_locationData!.longitude}');
-  //     await FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser?.uid).update(<String, dynamic>{
-  //       'location': [_locationData!.latitude,_locationData!.longitude],
-  //     });
-  //   }
-  // });
-  // }
+  uploadLocation() {
+  Timer.periodic(Duration(seconds:10),(timer) async {
+    if (_locationData != null && currentuser.gonggang){
+      debugPrint('${_locationData!.latitude} / ${_locationData!.longitude}');
+      await FirebaseFirestore.instance.collection('user').doc(currentuser!.uid).update({
+        'location': {'lat':_locationData!.latitude,'lng':_locationData!.longitude}, // 기본값
+      });
+    }
+  });
+  }
 
-  // initLocation() async {
-  //   bool _serviceEnabled;
-  //   PermissionStatus _permissionGranted;
+  initLocation() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
 
-  //   _serviceEnabled = await location.serviceEnabled();
-  //   if (!_serviceEnabled) {
-  //     _serviceEnabled = await location.requestService();
-  //     if (!_serviceEnabled) {
-  //       return;
-  //     }
-  //   }
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
 
-  //   _permissionGranted = await location.hasPermission();
-  //   if (_permissionGranted == PermissionStatus.denied) {
-  //     _permissionGranted = await location.requestPermission();
-  //     if (_permissionGranted != PermissionStatus.granted) {
-  //       return;
-  //     }
-  //   }
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
 
-  //   location.onLocationChanged.listen((LocationData currentLocation){
-  //     _locationData=currentLocation;
-  //   });
-  // }
+    location.onLocationChanged.listen((LocationData currentLocation){
+      _locationData=currentLocation;
+    });
+  }
 
   Future<void> init() async {
 
