@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
 import 'chat/eachchat.dart';
 import 'friend/friend.dart';
+import 'theme/color.dart';
 
 class mapPage extends StatefulWidget {
   const mapPage({super.key});
@@ -20,13 +21,11 @@ class mapPage extends StatefulWidget {
 class _mapPageState extends State<mapPage> {
   late GoogleMapController mapController;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   Map<String, bool> friends = {};
-  List<Map<String, String>> friendsForMarker= [];
+  List<Map<String, String>> friendsForMarker = [];
 
   Timer? timer;
-
-  
 
   LatLng _center = const LatLng(36.103945, 129.387546);
   Map<String, Marker> _markers = {};
@@ -46,27 +45,46 @@ class _mapPageState extends State<mapPage> {
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
-    _center= LatLng(doc.get('location')['lat'],doc.get('location')['lng']);
+    _center = LatLng(doc.get('location')['lat'], doc.get('location')['lng']);
 
     var _request = await http.get(Uri.parse(doc['imageURL']));
 
-    ui.Codec codec = await ui.instantiateImageCodec(_request.bodyBytes, targetWidth: 100, targetHeight: 100);
+    ui.Codec codec = await ui.instantiateImageCodec(_request.bodyBytes,
+        targetWidth: 100, targetHeight: 100);
     ui.FrameInfo frameInfo = await codec.getNextFrame();
     ui.Image image = frameInfo.image;
-    
+
     ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
     Canvas canvas = Canvas(pictureRecorder);
     Paint paint = Paint();
     double size = 100.0;
-    
+
     canvas.drawCircle(
       Offset(size / 2, size / 2),
       size / 2,
-      paint..shader = ui.ImageShader(image, ui.TileMode.clamp, ui.TileMode.clamp, Float64List.fromList([
-      size / 100, 0, 0, 0,
-      0, size / 100, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1])),
+      paint
+        ..shader = ui.ImageShader(
+            image,
+            ui.TileMode.clamp,
+            ui.TileMode.clamp,
+            Float64List.fromList([
+              size / 100,
+              0,
+              0,
+              0,
+              0,
+              size / 100,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ])),
     );
 
     final textPainter = TextPainter(
@@ -74,26 +92,31 @@ class _mapPageState extends State<mapPage> {
     );
     textPainter.text = TextSpan(
       text: ' ${doc['name']} ',
-      style: TextStyle(fontSize: 20, backgroundColor: Colors.greenAccent, color: Colors.white),
+      style: TextStyle(
+          fontSize: 20, backgroundColor: AppColor.primary, color: Colors.white),
     );
     textPainter.layout();
     textPainter.paint(
-        canvas, Offset(size / 2 - textPainter.width / 2, size / 2 + textPainter.height));
+        canvas,
+        Offset(
+            size / 2 - textPainter.width / 2, size / 2 + textPainter.height));
 
-
-    ui.Image circularImage = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
-    ByteData? byteData = await circularImage.toByteData(format: ui.ImageByteFormat.png);
+    ui.Image circularImage = await pictureRecorder
+        .endRecording()
+        .toImage(size.toInt(), size.toInt());
+    ByteData? byteData =
+        await circularImage.toByteData(format: ui.ImageByteFormat.png);
     Uint8List imageData = byteData!.buffer.asUint8List();
 
-    _markers[FirebaseAuth.instance.currentUser!.uid]=Marker(
-      markerId:MarkerId(doc.get('uid')),
-      position:LatLng(doc.get('location')['lat'],doc.get('location')['lng']),
+    _markers[FirebaseAuth.instance.currentUser!.uid] = Marker(
+      markerId: MarkerId(doc.get('uid')),
+      position: LatLng(doc.get('location')['lat'], doc.get('location')['lng']),
       icon: BitmapDescriptor.bytes(imageData),
       infoWindow: InfoWindow.noText,
     );
 
     friends = {};
-    
+
     if (doc.data() != null && doc.get('friendList') != null) {
       friends = Map<String, bool>.from(doc.get('friendList'));
     }
@@ -107,23 +130,42 @@ class _mapPageState extends State<mapPage> {
         if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) {
           var _request = await http.get(Uri.parse(friend['imageURL']));
 
-          ui.Codec codec = await ui.instantiateImageCodec(_request.bodyBytes, targetWidth: 100, targetHeight: 100);
+          ui.Codec codec = await ui.instantiateImageCodec(_request.bodyBytes,
+              targetWidth: 100, targetHeight: 100);
           ui.FrameInfo frameInfo = await codec.getNextFrame();
           ui.Image image = frameInfo.image;
-          
+
           ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
           Canvas canvas = Canvas(pictureRecorder);
           Paint paint = Paint();
           double size = 100.0;
-          
+
           canvas.drawCircle(
             Offset(size / 2, size / 2),
             size / 2,
-            paint..shader = ui.ImageShader(image, ui.TileMode.clamp, ui.TileMode.clamp, Float64List.fromList([
-            size / 100, 0, 0, 0,
-            0, size / 100, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1])),
+            paint
+              ..shader = ui.ImageShader(
+                  image,
+                  ui.TileMode.clamp,
+                  ui.TileMode.clamp,
+                  Float64List.fromList([
+                    size / 100,
+                    0,
+                    0,
+                    0,
+                    0,
+                    size / 100,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1
+                  ])),
           );
 
           final textPainter = TextPainter(
@@ -131,192 +173,195 @@ class _mapPageState extends State<mapPage> {
           );
           textPainter.text = TextSpan(
             text: ' ${friend['name']} ',
-            style: TextStyle(fontSize: 20, backgroundColor: Colors.greenAccent, color: Colors.white),
+            style: TextStyle(
+                fontSize: 20,
+                backgroundColor: Colors.greenAccent,
+                color: Colors.white),
           );
           textPainter.layout();
           textPainter.paint(
-              canvas, Offset(size / 2 - textPainter.width / 2, size / 2 + textPainter.height));
+              canvas,
+              Offset(size / 2 - textPainter.width / 2,
+                  size / 2 + textPainter.height));
 
-
-          ui.Image circularImage = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
-          ByteData? byteData = await circularImage.toByteData(format: ui.ImageByteFormat.png);
+          ui.Image circularImage = await pictureRecorder
+              .endRecording()
+              .toImage(size.toInt(), size.toInt());
+          ByteData? byteData =
+              await circularImage.toByteData(format: ui.ImageByteFormat.png);
           Uint8List imageData = byteData!.buffer.asUint8List();
 
-          _markers[friend.get('uid')]=Marker(
-            markerId:MarkerId(friend.get('uid')),
-            position:LatLng(friend.get('location')['lat'],friend.get('location')['lng']),
-            icon: BitmapDescriptor.bytes(imageData),
-            infoWindow: InfoWindow.noText,
-            onTap:((){
-              debugPrint('click');
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    backgroundColor: Colors.white,
-                    title: Text("${friend.get('name')}님과 지금 바로 매칭해보세요!", style: TextStyle(fontSize: 20)),
-                    content: 
-                      // TextButton(
-                      //   onPressed: () {
-                      //     Navigator.of(context).pop();
-                      //   },
-                      //   child: Text(
-                      //     "👋 손 흔들기 ",
-                      //     style: TextStyle(
-                      //         color: Colors.black),
-                      //   ),
-                      // ),
-                      Container(
-                        padding:EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        color:Colors.greenAccent,
-                        child:
-                          TextButton(
-                            onPressed: () async {
-                              String friendUid = friend.get('uid');
-                              String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+          _markers[friend.get('uid')] = Marker(
+              markerId: MarkerId(friend.get('uid')),
+              position: LatLng(
+                  friend.get('location')['lat'], friend.get('location')['lng']),
+              icon: BitmapDescriptor.bytes(imageData),
+              infoWindow: InfoWindow.noText,
+              onTap: (() {
+                debugPrint('click');
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.white,
+                      title: Text("${friend.get('name')}님과 지금 바로 매칭해보세요!",
+                          style: TextStyle(fontSize: 20)),
+                      content:
+                          // TextButton(
+                          //   onPressed: () {
+                          //     Navigator.of(context).pop();
+                          //   },
+                          //   child: Text(
+                          //     "👋 손 흔들기 ",
+                          //     style: TextStyle(
+                          //         color: Colors.black),
+                          //   ),
+                          // ),
+                          Container(
+                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        color: AppColor.primary,
+                        child: TextButton(
+                          onPressed: () async {
+                            String friendUid = friend.get('uid');
+                            String currentUserUid =
+                                FirebaseAuth.instance.currentUser!.uid;
 
-                              String chatRoomId = "";
-                              QuerySnapshot chatRooms = await FirebaseFirestore.instance
-                                  .collection('chat')
-                                  .where('members', arrayContains: currentUserUid)
-                                  .get();
+                            String chatRoomId = "";
+                            QuerySnapshot chatRooms = await FirebaseFirestore
+                                .instance
+                                .collection('chat')
+                                .where('members', arrayContains: currentUserUid)
+                                .get();
 
-                              for (var room in chatRooms.docs) {
-                                List<dynamic> members = room['members'];
-                                if (members.contains(friendUid)) {
-                                  chatRoomId= room.id;
-                                }
+                            for (var room in chatRooms.docs) {
+                              List<dynamic> members = room['members'];
+                              if (members.contains(friendUid)) {
+                                chatRoomId = room.id;
                               }
+                            }
 
-                                DocumentReference newChatRoom =
-                                    FirebaseFirestore.instance.collection('chat').doc();
-                                await newChatRoom.set({
-                                  'members': [currentUserUid, friendUid],
-                                  'lastMessage': '',
-                                  'timestamp': FieldValue.serverTimestamp(),
-                                });
+                            DocumentReference newChatRoom = FirebaseFirestore
+                                .instance
+                                .collection('chat')
+                                .doc();
+                            await newChatRoom.set({
+                              'members': [currentUserUid, friendUid],
+                              'lastMessage': '',
+                              'timestamp': FieldValue.serverTimestamp(),
+                            });
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      eachChatPage(chatRoomId: chatRoomId),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "👥 \메세지 보내기 ",
-                              style: TextStyle(
-                                  color: Colors.white),
-                            ),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    eachChatPage(chatRoomId: chatRoomId),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "👥 \메세지 보내기 ",
+                            style: TextStyle(color: Colors.white),
                           ),
-                      ),
-                    
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          "닫기",
-                          style: TextStyle(
-                              color: Colors.black),
                         ),
                       ),
-                    ],
-                  );
-                },
-              );
-            })
-          );
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "닫기",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }));
         }
       }
     }
 
+    // _markers[FirebaseAuth.instance.currentUser!.uid]=Marker(
+    //   markerId:MarkerId(doc.get('uid')),
+    //   position:LatLng(doc.get('location')['lat'],doc.get('location')['lng']),
+    //   icon: BitmapDescriptor.bytes(imageData),
+    //   infoWindow: InfoWindow.noText,
+    //   onTap:((){
+    //     debugPrint('click');
+    //     TextEditingController _controller =
+    //         TextEditingController();
+    //     showDialog(
+    //       context: context,
+    //       builder: (BuildContext context) {
+    //         return AlertDialog(
+    //           backgroundColor: Colors.white,
+    //           title: Text("상태 메세지 수정"),
+    //           content: TextField(
+    //             controller: _controller,
+    //             decoration: InputDecoration(
+    //               hintText: "상태 메세지를 입력해주세요",
+    //             ),
+    //           ),
+    //           actions: [
+    //             TextButton(
+    //               onPressed: () {
+    //                 Navigator.of(context).pop();
+    //               },
+    //               child: Text(
+    //                 "닫기",
+    //                 style: TextStyle(
+    //                     color: Colors.black),
+    //               ),
+    //             ),
+    //             TextButton(
+    //               onPressed: () {
+    //                 Navigator.of(context).pop();
+    //               },
+    //               child: Text(
+    //                 "저장",
+    //                 style: TextStyle(
+    //                     color: Colors.black),
+    //               ),
+    //             ),
+    //           ],
+    //         );
+    //       },
+    //     );
+    //   })
+    // );
 
+    setState(() {});
 
-      // _markers[FirebaseAuth.instance.currentUser!.uid]=Marker(
-      //   markerId:MarkerId(doc.get('uid')),
-      //   position:LatLng(doc.get('location')['lat'],doc.get('location')['lng']),
-      //   icon: BitmapDescriptor.bytes(imageData),
-      //   infoWindow: InfoWindow.noText,
-      //   onTap:((){
-      //     debugPrint('click');
-      //     TextEditingController _controller =
-      //         TextEditingController();
-      //     showDialog(
-      //       context: context,
-      //       builder: (BuildContext context) {
-      //         return AlertDialog(
-      //           backgroundColor: Colors.white,
-      //           title: Text("상태 메세지 수정"),
-      //           content: TextField(
-      //             controller: _controller,
-      //             decoration: InputDecoration(
-      //               hintText: "상태 메세지를 입력해주세요",
-      //             ),
-      //           ),
-      //           actions: [
-      //             TextButton(
-      //               onPressed: () {
-      //                 Navigator.of(context).pop();
-      //               },
-      //               child: Text(
-      //                 "닫기",
-      //                 style: TextStyle(
-      //                     color: Colors.black),
-      //               ),
-      //             ),
-      //             TextButton(
-      //               onPressed: () {
-      //                 Navigator.of(context).pop();
-      //               },
-      //               child: Text(
-      //                 "저장",
-      //                 style: TextStyle(
-      //                     color: Colors.black),
-      //               ),
-      //             ),
-      //           ],
-      //         );
-      //       },
-      //     );
-      //   })
-      // );
+    // Timer.periodic(Duration(seconds:10),(timer) async {
+    //   doc = await _firestore
+    //     .collection('user')
+    //     .doc(FirebaseAuth.instance.currentUser!.uid)
+    //     .get();
+    //   Marker tmp_marker = _markers[doc.get('uid')]!.copyWith(positionParam: LatLng(doc.get('location')['lat'],doc.get('location')['lng']));
+    //   setState((){
+    //     _markers[doc.get('uid')] = tmp_marker;
+    //   });
 
-      setState((){});
+    //   for (var entry in friends.entries) {
+    //     String key = entry.key;
+    //     bool value = entry.value;
+    //     if (value) {
+    //       var friend =
+    //           await FirebaseFirestore.instance.collection('user').doc(key).get();
+    //       if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) {
 
-      // Timer.periodic(Duration(seconds:10),(timer) async {
-      //   doc = await _firestore
-      //     .collection('user')
-      //     .doc(FirebaseAuth.instance.currentUser!.uid)
-      //     .get();
-      //   Marker tmp_marker = _markers[doc.get('uid')]!.copyWith(positionParam: LatLng(doc.get('location')['lat'],doc.get('location')['lng']));
-      //   setState((){
-      //     _markers[doc.get('uid')] = tmp_marker;
-      //   });
+    //         Marker tmp_marker = _markers[friend.get('uid')]!.copyWith(positionParam: LatLng(friend.get('location')['lat'],friend.get('location')['lng']));
+    //         setState((){
+    //           _markers[friend.get('uid')] = tmp_marker;
+    //         });
 
-
-      //   for (var entry in friends.entries) {
-      //     String key = entry.key;
-      //     bool value = entry.value;
-      //     if (value) {
-      //       var friend =
-      //           await FirebaseFirestore.instance.collection('user').doc(key).get();
-      //       if (friend.get('friendList')[FirebaseAuth.instance.currentUser!.uid]) {
-
-      //         Marker tmp_marker = _markers[friend.get('uid')]!.copyWith(positionParam: LatLng(friend.get('location')['lat'],friend.get('location')['lng']));
-      //         setState((){
-      //           _markers[friend.get('uid')] = tmp_marker;
-      //         });
-
-      //       }
-      //     }
-      //   }
-      // });
-    
+    //       }
+    //     }
+    //   }
+    // });
   }
-  
 
   //   List<Future<void>> friendFetchFutures = friends.map((element) async {
   //     var _friend = await _firestore.collection('user').doc(element).get();
@@ -347,10 +392,6 @@ class _mapPageState extends State<mapPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Maps Sample App'),
-          backgroundColor: Colors.green[700],
-        ),
         body: GoogleMap(
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
