@@ -32,23 +32,20 @@ class LoginPage extends StatelessWidget {
 
         if (!userDoc.exists) {
           // Step 6. 새 사용자일 경우 Firestore에 기본값 저장
-          await FirebaseFirestore.instance
-              .collection('user')
-              .doc(user.uid)
-              .set({
+          await FirebaseFirestore.instance.collection('user').doc(user.uid).set({
             'uid': user.uid,
-            'name': user.displayName ?? 'Unknown',
+            'name': user.displayName ?? '(미입력)',
+            'location': {'lat':36.103945,'lng':129.387546},
             'imageURL':
                 "https://firebasestorage.googleapis.com/v0/b/ddm-project-32430.appspot.com/o/default.png?alt=media&token=2a5eb741-f462-404e-a3b1-b57d9c564e86",
-            'email': user.email ?? 'Unknown',
+            'email': user.email ?? '(미입력)',
             'year': "0", // 기본값
-            'major': "Unknown", // 기본값
-            'gender': 'Unknown', // 기본값
+            'major': "(미입력)",
+            'friendList': {},
             'dday': [
               {'date': '', 'option': true, 'title': ''},
               {'date': '', 'option': true, 'title': ''}
             ],
-            'friendList': {},
             'joinedMeetings': [], // 기본값
             'joinedChats': [], // 기본값
             'gonggang': true, // 기본값
