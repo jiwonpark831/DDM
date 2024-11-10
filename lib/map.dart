@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
-
+import 'chat/eachchat.dart';
+import 'friend/friend.dart';
 
 class mapPage extends StatefulWidget {
   const mapPage({super.key});
@@ -148,15 +149,69 @@ class _mapPageState extends State<mapPage> {
             infoWindow: InfoWindow.noText,
             onTap:((){
               debugPrint('click');
-              TextEditingController _controller =
-                  TextEditingController();
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
                     backgroundColor: Colors.white,
-                    title: Text("상태 메세지 수정"),
-                    content: Text("dsa"),
+                    title: Text("${friend.get('name')}님과 지금 바로 매칭해보세요!", style: TextStyle(fontSize: 20)),
+                    content: 
+                      // TextButton(
+                      //   onPressed: () {
+                      //     Navigator.of(context).pop();
+                      //   },
+                      //   child: Text(
+                      //     "👋 손 흔들기 ",
+                      //     style: TextStyle(
+                      //         color: Colors.black),
+                      //   ),
+                      // ),
+                      Container(
+                        padding:EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        color:Colors.greenAccent,
+                        child:
+                          TextButton(
+                            onPressed: () async {
+                              String friendUid = friend.get('uid');
+                              String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+
+                              String chatRoomId = "";
+                              QuerySnapshot chatRooms = await FirebaseFirestore.instance
+                                  .collection('chat')
+                                  .where('members', arrayContains: currentUserUid)
+                                  .get();
+
+                              for (var room in chatRooms.docs) {
+                                List<dynamic> members = room['members'];
+                                if (members.contains(friendUid)) {
+                                  chatRoomId= room.id;
+                                }
+                              }
+
+                                DocumentReference newChatRoom =
+                                    FirebaseFirestore.instance.collection('chat').doc();
+                                await newChatRoom.set({
+                                  'members': [currentUserUid, friendUid],
+                                  'lastMessage': '',
+                                  'timestamp': FieldValue.serverTimestamp(),
+                                });
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      eachChatPage(chatRoomId: chatRoomId),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "👥 \메세지 보내기 ",
+                              style: TextStyle(
+                                  color: Colors.white),
+                            ),
+                          ),
+                      ),
+                    
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -164,16 +219,6 @@ class _mapPageState extends State<mapPage> {
                         },
                         child: Text(
                           "닫기",
-                          style: TextStyle(
-                              color: Colors.black),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          "저장",
                           style: TextStyle(
                               color: Colors.black),
                         ),
