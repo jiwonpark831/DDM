@@ -381,6 +381,7 @@ class _SharedBoardPage2State extends State<SharedBoardPage2> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> _posts = [];
   final TextEditingController _postController = TextEditingController();
+  final String? userId = FirebaseAuth.instance.currentUser?.displayName;
 
   @override
   void initState() {
@@ -398,6 +399,7 @@ class _SharedBoardPage2State extends State<SharedBoardPage2> {
 
   Future<void> addPost(String content) async {
     Map<String, dynamic> newPost = {
+      'author': userId ?? 'Anonymous',
       'content': content,
       'timestamp': Timestamp.now(),
     };
