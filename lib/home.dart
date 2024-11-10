@@ -662,7 +662,7 @@ class _mainPageState extends State<mainPage> {
                                         maxLines: 1,
                                       ),
                                       SizedBox(height: 8),
-                                      Text('🗓️매주 ${data['date'] ?? ''}',
+                                      Text('🗓️${data['date'] ?? ''}',
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(fontSize: 10)),
                                       Text('⏰${data['time'] ?? ''}',
