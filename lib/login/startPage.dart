@@ -50,8 +50,6 @@ Future signInWithGoogle_original() async {
           {'date': '', 'option': true, 'title': ''},
           {'date': '', 'option': true, 'title': ''}
         ],
-        'joinedMeetings': [], // 기본값
-        'joinedChats': [], // 기본값
         'gonggang': true, // 기본값
         'tag_index': "카공해요",
         'status': "같이 밥 먹을 사람~",
