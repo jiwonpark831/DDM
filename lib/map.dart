@@ -240,16 +240,18 @@ class _mapPageState extends State<mapPage> {
                               }
                             }
 
-                            DocumentReference newChatRoom = FirebaseFirestore
-                                .instance
-                                .collection('chat')
-                                .doc();
-                            await newChatRoom.set({
-                              'members': [currentUserUid, friendUid],
-                              'lastMessage': '',
-                              'timestamp': FieldValue.serverTimestamp(),
-                            });
-
+                            if(chatRoomId == ""){
+                              DocumentReference newChatRoom = FirebaseFirestore
+                                  .instance
+                                  .collection('chat')
+                                  .doc();
+                              await newChatRoom.set({
+                                'members': [currentUserUid, friendUid],
+                                'lastMessage': '',
+                                'timestamp': FieldValue.serverTimestamp(),
+                              });
+                              chatRoomId = newChatRoom.id;
+                            }
                             Navigator.push(
                               context,
                               MaterialPageRoute(
